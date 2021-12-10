@@ -1,31 +1,36 @@
 <template>
-  <div class="d-flex align-center">
-    <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
+  <!-- <div> -->
+     <!-- <v-navigation-drawer
+      v-model="drawer"
+      temporary
+      app
+    >
+      <v-list>
+        <v-list-item>
+          <router-link to="/" class="white--text">HOME</router-link>
+        </v-list-item>
+        <v-list-item>
+          <router-link to="/about" class="white--text">About</router-link>
+        </v-list-item>
+        <v-list-item>
+          <router-link to="/sign_in" class="white--text">ログイン</router-link>
+        </v-list-item>
+        <v-list-item>
+          <router-link to="/itemcreate" class="white--text">アイテムを出品する</router-link>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer> -->
 
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
+    <v-app-bar app>
+      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-toolbar-title>RemakeTree</v-toolbar-title>
+      <v-btn v-if="logedIn" @click="signOut">ログアウト</v-btn>
+    </v-app-bar>
+<!--
+    <v-main>
 
-      <v-spacer></v-spacer>
-      <router-link to="/" class="white--text">HOME</router-link>
-      <router-link to="/about" class="white--text">About</router-link>
-      <router-link to="/sign_in" class="white--text">ログイン</router-link>
-      <button v-if="logedIn" @click="signOut">ログアウト</button>
-  </div>
+    </v-main>
+  </div> -->
 </template>
 
 <script>
@@ -52,6 +57,9 @@ export default {
         }
       }
       this.deleteSession(logoutParams)
+    },
+    drawer () {
+      this.$emit('toggleDrawer')
     }
   }
 }
