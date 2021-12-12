@@ -34,11 +34,6 @@ export default {
     password: '',
     client: ''
   }),
-  created () {
-    if (this.$store.state.user.client !== null) {
-      this.setLocalStorage()
-    }
-  },
   computed: {
     ...mapGetters('user', ['user', 'isAuthenticated']),
     logedIn () {
@@ -65,15 +60,15 @@ export default {
         password: this.password
       }
       this.authUser(params)
-      // this.$router.push('/about')
-    },
-    setLocalStorage () {
-      localStorage.setItem('headers', JSON.stringify({
-        accessToken: this.user['acccess-token'],
-        client: this.user.client,
-        uid: this.user.uid
-      }))
+      this.$router.push('/about')
     }
+    // setLocalStorage () {
+    //   localStorage.setItem('headers', JSON.stringify({
+    //     accessToken: this.user['acccess-token'],
+    //     client: this.user.client,
+    //     uid: this.user.uid
+    //   }))
+    // }
     // signOut () {
     //   const logoutParams = {
     //     headers: {

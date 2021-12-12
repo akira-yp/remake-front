@@ -45,8 +45,12 @@ const mutations = {
     state.designer = false
     state.expiry = null
     localStorage.removeItem('headers')
+  },
+  setAuthData (state, user) {
+    state.accessToken = user.accessToken
+    state.client = user.client
+    state.uid = user.uid
   }
-
 }
 
 const actions = {
@@ -59,6 +63,9 @@ const actions = {
     await axios.delete(`${apiUrl}/v1/auth/sign_out`, auth)
       .then(response => { commit('removeUser', response) })
       .catch(error => { console.log(error) })
+  },
+  setAuthToStore ({ commit }, authData) {
+    commit('setAuthData', authData)
   }
 }
 

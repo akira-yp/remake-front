@@ -4,37 +4,96 @@
     <v-form>
       <v-text-field
       label="Item title"
+      v-model="title"
       ></v-text-field>
 
-      <!-- <v-file-input
-      v-model="images"
-      multiple
-      clearrable
-      label="Item Images"
+      <input
+        type="file"
+        @change="onImageChange"
+        multiple="multiple"
+        name="item[images][]"
       >
-        <template v-slot:selection="{ index, text }">
-          <v-chip
-            label
-            close
-            @click:close="deleteChip(index, text)"
-          >{{ text }}</v-chip>
-        </template>
-      </v-file-input> -->
+      <v-card class="d-flex flex-row justify-center" elevation="0">
+          <v-img
+            v-for="(image, index) in encodedImages"
+            v-bind:key="index"
+            :src="image"
+            max-height="100"
+            max-width="100"
+            aspect-ratio="1"
+            class="ma-1 rounded-xl"
+          ></v-img>
+      </v-card>
       <v-text-field
+      v-model="description"
       label="Description"
       ></v-text-field>
-      <v-button>
+      <v-btn type="submit" @click@="upload" :disabled="title === ''">
         このアイテムを出品する
-      </v-button>
+      </v-btn>
     </v-form>
   </div>
 </template>
 
 <script>
+// import axios from 'axios'
+import { mapActions } from 'vuex'
+
 export default {
   name: 'ItemCreate',
   data: () => ({
-    uploadFileLost: []
-  })
+    encodedImages: [],
+    images: [],
+    title: '',
+    description: ''
+  }),
+  methods: {
+    ...mapActions('posts', ['createPost']),
+    getBase64 (file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.readAsDataURL(file)
+        reader.onload = () => resolve(reader.result)
+        reader.onerror = error => reject(error)
+      })
+    },
+    onImageChange (e) {
+      const images = e.target.files
+      for (var i = 0; i < images.length; i++) {
+        this.images.push(images[i])
+        this.getBase64(images[i])
+          .then(image => this.encodedImages.push(image))
+          .catch(error => this.setError(error, '画像のアップロードに失敗しました。'))
+      }
+    },
+    async upload () {
+      const formData = new FormData()
+      formData.append('title', this.title)
+      formData.append('images', this.images)
+      const headers = {
+        headers:
+          {
+            uid: this.$store.state.user.uid,
+            'access-token': this.$store.state.user.accessToken,
+            client: this.$store.state.user.client,
+            'content-Type': 'multipart/form-data'
+          }
+      }
+      this.createPost(formData, headers)
+    }
+    // async createPost (data) {
+    //   const headers = {
+    //     headers:
+    //       {
+    //         uid: this.$store.state.user.uid,
+    //         'access-token': this.$store.state.user.accessToken,
+    //         client: this.$store.state.user.client,
+    //         'content-Type': 'multipart/form-data'
+    //       }
+    //   }
+    //   await axios.post('http://localhost:3000/v1/items', data, headers)
+    //     .catch(e => console.log(e))
+    // }
+  }
 }
 </script>

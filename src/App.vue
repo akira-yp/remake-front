@@ -24,49 +24,8 @@
     <v-app-bar app>
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>RemakeTree</v-toolbar-title>
-      <v-btn v-if="logedIn" depressed="false" @click="signOut">ログアウト</v-btn>
+      <v-btn v-if="logedIn" depressed @click="signOut">ログアウト</v-btn>
     </v-app-bar>
-
-    <!-- <v-app-bar
-      app
-      color="primary"
-      dark
-    > -->
-      <!-- <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
-
-      <v-spacer></v-spacer>
-      <router-link to="/" class="white--text">HOME</router-link>
-      <router-link to="/about" class="white--text">About</router-link>
-      <router-link to="/sign_in" class="white--text">Signin</router-link>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn> -->
-      <!-- <Header /> -->
-    <!-- </v-app-bar> -->
 
     <v-main>
       <router-view/>
@@ -87,7 +46,12 @@ export default {
     drawer: null,
     user: []
   }),
-
+  created () {
+    if (this.$store.state.user.client === null) {
+      const localData = JSON.parse(localStorage.getItem('headers'))
+      this.setAuthToStore(localData)
+    }
+  },
   computed: {
     ...mapGetters('user', ['isAuthenticated']),
     logedIn () {
@@ -95,7 +59,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('user', ['deleteSession']),
+    ...mapActions('user', ['deleteSession', 'setAuthToStore']),
     signOut () {
       const logoutParams = {
         headers: {
@@ -105,7 +69,21 @@ export default {
         }
       }
       this.deleteSession(logoutParams)
+    },
+    setLocalStorage () {
+      localStorage.setItem('headers', JSON.stringify({
+        accessToken: this.user['acccess-token'],
+        client: this.user.client,
+        uid: this.user.uid
+      }))
     }
+    // setAuthToStore () {
+    //   const localItems = localStorage.getItem('headers')
+    //   console.log(localItems)
+    //   this.user['access-token'] = localItems.accessToken
+    //   this.user.client = localItems.client
+    //   this.user.client = localItems.uid
+    // }
   }
 }
 </script>
