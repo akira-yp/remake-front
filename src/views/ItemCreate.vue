@@ -4,7 +4,7 @@
     <v-form>
       <v-text-field
       label="Item title"
-      v-model="title"
+      v-model="item.title"
       ></v-text-field>
 
       <input
@@ -25,10 +25,10 @@
           ></v-img>
       </v-card>
       <v-text-field
-      v-model="description"
+      v-model="item.description"
       label="Description"
       ></v-text-field>
-      <v-btn type="submit" @click@="upload" :disabled="title === ''">
+      <v-btn @click="upLoad" :disabled="item.title === ''">
         このアイテムを出品する
       </v-btn>
     </v-form>
@@ -36,16 +36,18 @@
 </template>
 
 <script>
-// import axios from 'axios'
+import axios from 'axios'
 import { mapActions } from 'vuex'
 
 export default {
   name: 'ItemCreate',
   data: () => ({
     encodedImages: [],
-    images: [],
-    title: '',
-    description: ''
+    item: {
+      images: [],
+      title: '',
+      description: ''
+    }
   }),
   methods: {
     ...mapActions('posts', ['createPost']),
@@ -60,16 +62,21 @@ export default {
     onImageChange (e) {
       const images = e.target.files
       for (var i = 0; i < images.length; i++) {
-        this.images.push(images[i])
+        this.item.images.push(images[i])
         this.getBase64(images[i])
           .then(image => this.encodedImages.push(image))
           .catch(error => this.setError(error, '画像のアップロードに失敗しました。'))
       }
     },
-    async upload () {
+    async upLoad () {
       const formData = new FormData()
-      formData.append('title', this.title)
-      formData.append('images', this.images)
+      formData.append('item[title]', this.item.title)
+      formData.append('item[description', this.item.description)
+      if (this.item.images.length) {
+        for (const image of this.item.images) {
+          formData.append('item[images]' + '[]', image)
+        }
+      }
       const headers = {
         headers:
           {
@@ -79,7 +86,17 @@ export default {
             'content-Type': 'multipart/form-data'
           }
       }
-      this.createPost(formData, headers)
+      const res = await axios.post('http://localhost:3000/v1/items', formData, headers)
+        .then(response => response.data)
+        .catch(err => console.log(err))
+      // console.log(res)
+      this.$router.push({
+        path: '/item',
+        query: {
+          item: res
+        }
+      })
+      // this.createPost(formData, headers)
     }
     // async createPost (data) {
     //   const headers = {

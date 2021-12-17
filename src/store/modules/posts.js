@@ -26,14 +26,11 @@ const actions = {
       console.error(e)
     }
   },
-  async createPost ({ commit }, post, headers) {
-    try {
-      console.log(headers)
-      const response = await axios.post(`${apiUrlBase}`, post, headers)
-      commit('appendPost', response.data)
-    } catch (e) {
-      console.error(e)
-    }
+  async createPost ({ commit }, item) {
+    await axios.post(`${apiUrlBase}`, item)
+      .then(response => { commit('appendPost', response.data) })
+      .catch(err => console.log(err))
+    console.log(item)
   },
   async deletePost ({ commit }, id) {
     try {
