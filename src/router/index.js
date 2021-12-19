@@ -5,6 +5,7 @@ import Home from '../views/Home.vue'
 import ItemCreate from '../views/ItemCreate.vue'
 import SignIn from '../views/SignIn.vue'
 import ItemDetails from '../views/ItemDetails.vue'
+import ItemIndex from '../views/ItemIndex.vue'
 
 Vue.use(VueRouter)
 
@@ -34,6 +35,11 @@ const routes = [
     path: '/item',
     name: 'ItemDetails',
     component: ItemDetails
+  },
+  {
+    path: '/items',
+    name: 'ItemIndex',
+    component: ItemIndex
   }
 ]
 

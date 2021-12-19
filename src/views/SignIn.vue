@@ -60,7 +60,7 @@ export default {
         password: this.password
       }
       this.authUser(params)
-      this.$router.push('/about')
+      this.$router.push('/items')
     }
     // setLocalStorage () {
     //   localStorage.setItem('headers', JSON.stringify({

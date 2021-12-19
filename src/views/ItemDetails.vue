@@ -2,6 +2,7 @@
   <div>
     <h1>{{ item.title }}</h1>
     <v-img
+      :aspect-ratio="1/1"
       v-for="(image, index) in item.images_url"
       v-bind:key="index"
       :src="image"

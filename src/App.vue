@@ -10,6 +10,9 @@
           <router-link to="/" >HOME</router-link>
         </v-list-item>
         <v-list-item>
+          <router-link to="/items">アイテムを探す</router-link>
+        </v-list-item>
+        <v-list-item>
           <router-link to="/about">About</router-link>
         </v-list-item>
         <v-list-item>
