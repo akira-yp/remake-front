@@ -6,6 +6,7 @@ import ItemCreate from '../views/ItemCreate.vue'
 import SignIn from '../views/SignIn.vue'
 import ItemDetails from '../views/ItemDetails.vue'
 import ItemIndex from '../views/ItemIndex.vue'
+import SignUp from '../views/SignUp.vue'
 
 Vue.use(VueRouter)
 
@@ -40,6 +41,11 @@ const routes = [
     path: '/items',
     name: 'ItemIndex',
     component: ItemIndex
+  },
+  {
+    path: '/sign_up',
+    name: 'SignUp',
+    component: SignUp
   }
 ]
 

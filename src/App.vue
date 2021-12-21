@@ -15,8 +15,11 @@
         <v-list-item>
           <router-link to="/about">About</router-link>
         </v-list-item>
-        <v-list-item>
+        <v-list-item v-if="logedIn == false">
           <router-link to="/sign_in" >ログイン</router-link>
+        </v-list-item>
+        <v-list-item v-if="logedIn == false">
+          <router-link to="/sign_up">アカウント登録</router-link>
         </v-list-item>
         <v-list-item>
           <router-link to="/itemcreate" >アイテムを出品する</router-link>

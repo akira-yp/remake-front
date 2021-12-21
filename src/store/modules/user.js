@@ -66,6 +66,11 @@ const actions = {
   },
   setAuthToStore ({ commit }, authData) {
     commit('setAuthData', authData)
+  },
+  async createUser ({ commit }, user) {
+    await axios.post(`${apiUrl}/v1/auth`, user)
+      .then(response => { commit('setUser', response) })
+      .catch(error => { console.log(error) })
   }
 }
 

@@ -12,11 +12,26 @@
     </div> -->
     <div>
         <h1>SignIn</h1>
-        <label for="email">email</label>
+        <v-form>
+          <v-text-field
+            label="e-mail"
+            type="email"
+            v-model="email"
+          ></v-text-field>
+          <v-text-field
+            label="password"
+            type="password"
+            v-model="password"
+          ></v-text-field>
+          <v-btn
+            @click="signIn"
+          >ログイン</v-btn>
+        </v-form>
+        <!-- <label for="email">email</label>
         <input id="email" type="email" v-model="email" />
         <label for="password">password</label>
         <input id="password" type="password" v-model="password" />
-        <button @click="signIn">ログイン</button>
+        <button @click="signIn">ログイン</button> -->
     </div>
     <div>
       <!-- <button @click="signOut">ログアウト</button> -->
