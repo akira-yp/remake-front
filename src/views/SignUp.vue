@@ -33,10 +33,9 @@ export default {
     password: '',
     designer: false
   }),
-  created () {
-    if (this.isAuthenticated()) {
-      this.$router.push('/items')
-    }
+  mounted () {
+    this.designer = this.$route.query.designer
+    console.log(this.designer)
   },
   computed: {
     ...mapGetters('user', ['isAuthenticated'])
