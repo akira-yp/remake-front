@@ -24,6 +24,12 @@
         <v-list-item>
           <router-link to="/itemcreate" >アイテムを出品する</router-link>
         </v-list-item>
+        <v-list-item>
+          <router-link to="/portfolio">ポートフォリオ</router-link>
+        </v-list-item>
+        <v-list-item>
+          <router-link to="/designers">リメイクデザイナーを探す</router-link>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 

@@ -7,6 +7,8 @@ import SignIn from '../views/SignIn.vue'
 import ItemDetails from '../views/ItemDetails.vue'
 import ItemIndex from '../views/ItemIndex.vue'
 import SignUp from '../views/SignUp.vue'
+import Portfolio from '../views/Portfolio.vue'
+import DesignersIndex from '../views/DesignersIndex.vue'
 
 Vue.use(VueRouter)
 
@@ -46,6 +48,16 @@ const routes = [
     path: '/sign_up',
     name: 'SignUp',
     component: SignUp
+  },
+  {
+    path: '/portfolio',
+    name: 'Portfolio',
+    component: Portfolio
+  },
+  {
+    path: '/designers',
+    name: 'DesignersIndex',
+    component: DesignersIndex
   }
 ]
 

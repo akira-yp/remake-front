@@ -71,7 +71,7 @@ export default {
     async upLoad () {
       const formData = new FormData()
       formData.append('item[title]', this.item.title)
-      formData.append('item[description', this.item.description)
+      formData.append('item[description]', this.item.description)
       if (this.item.images.length) {
         for (const image of this.item.images) {
           formData.append('item[images]' + '[]', image)
@@ -89,7 +89,6 @@ export default {
       const res = await axios.post('http://localhost:3000/v1/items', formData, headers)
         .then(response => response.data)
         .catch(err => console.log(err))
-      // console.log(res)
       this.$router.push({
         path: '/item',
         query: {

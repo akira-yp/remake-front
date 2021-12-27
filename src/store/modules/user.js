@@ -8,7 +8,7 @@ const state = {
   accessToken: null,
   uid: null,
   client: null,
-  designer: false,
+  designer: null,
   expiry: null
 }
 

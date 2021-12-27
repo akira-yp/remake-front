@@ -1,6 +1,7 @@
 <template>
   <div>
-    <h1>アカウント登録</h1>
+    <v-btn @click="toggleDesigner()"></v-btn>
+    <h1>{{ setTitle }}</h1>
     <v-form>
       <v-text-field
         label="name"
@@ -17,28 +18,39 @@
         v-model="password"
       ></v-text-field>
       <v-btn
+        v-if="designer"
         @click="signUp"
-      >アカウントを登録する</v-btn>
+      >デザイナー登録する</v-btn>
+      <v-btn
+        v-else
+        @click="signUp"
+      >アカウント登録する</v-btn>
     </v-form>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapActions } from 'vuex'
 export default {
   name: 'SignUp',
   data: () => ({
     name: '',
     email: '',
     password: '',
-    designer: false
+    designer: Boolean
   }),
-  mounted () {
-    this.designer = this.$route.query.designer
-    console.log(this.designer)
+  created () {
+    this.$route.query.designer === 'true' ? this.designer = true : this.designer = false
   },
   computed: {
-    ...mapGetters('user', ['isAuthenticated'])
+    // ...mapGetters('user', ['isAuthenticated']),
+    setTitle () {
+      if (this.designer === true) {
+        return 'デザイナー登録'
+      } else {
+        return 'アカウント登録'
+      }
+    }
   },
   methods: {
     ...mapActions('user', ['createUser', 'authUser']),
@@ -51,6 +63,12 @@ export default {
       await this.createUser(formData)
         .then(response => this.authUser(response.data))
         .catch(error => console.log(error))
+    },
+    async updateUser () {
+      const formData = new FormData()
+      formData.append('name', this.name)
+      formData.append('email', this.email)
+      formData.append('password', this)
     }
   }
 
