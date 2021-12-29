@@ -1,40 +1,38 @@
 <template>
   <div>
-    <h1>Portfolio</h1>
-    <v-form>
-      <v-text-field
-      label="greeting"
-      v-model="profile.greeting"
-      ></v-text-field>
+    <v-container>
+      <v-layout justify-space-between>
+        <v-flex>
+          <h1>Portfolio</h1>
+        </v-flex>
+        <v-flex shrink>
+          <v-btn v-if="logedIn" @click="toggleEditMode" rounded>{{ editBtn }}</v-btn>
+        </v-flex>
+      </v-layout>
+    </v-container>
 
-      <input
-        type="file"
-        label="プロフィール写真"
-        @change="onAvatarChange"
-        name="profile[avatar]"
-      >
-      <v-card class="d-flex flex-row justify-center" elevation="0">
-        <v-img
-          :src="prevAvatar"
-          max-height="100"
-          max-width="100"
-          aspect-ratio="1"
-          class="rounded-circle"
-        ></v-img>
-      </v-card>
-      <v-text-field
-        label="description"
-        v-model="profile.description"
-      ></v-text-field>
-
-      <input
-        type="file"
-        label="ポートフォリオ画像"
-        @change="onWorksChange"
-        multiple
-        name="profile[works][]"
-      >
-
+    <div v-if="!isEditMode">
+      <v-layout justify-center>
+        <v-card width="70%">
+          <v-layout justify-center mt-3>
+            <v-img
+            :src="prevAvatar"
+            max-height="100"
+            max-width="100"
+            aspect-ratio="1"
+            class="rounded-circle"
+            ></v-img>
+          </v-layout>
+          <v-card-text>
+            <p>{{ profile.greeting }}</p>
+          </v-card-text>
+        </v-card>
+      </v-layout>
+      <v-layout>
+        <v-card flat>
+          <v-card-text>{{ profile.description }}</v-card-text>
+        </v-card>
+      </v-layout>
       <v-card class="d-flex flex-row justify-center" elevation="0">
           <v-img
             v-for="(work, index) in prevWorks"
@@ -46,15 +44,94 @@
             class="ma-1 rounded-xl"
           ></v-img>
       </v-card>
-      <v-btn @click="createProfile" :disabled="profile.greeting === ''">
-        このプロフィールを作成
-      </v-btn>
-    </v-form>
+    </div>
+
+    <div d-flex flex-row justify-center>
+      <v-form v-if="isEditMode">
+        <v-text-field
+        label="greeting"
+        v-model="profile.greeting"
+        ></v-text-field>
+
+        <input
+          type="file"
+          label="プロフィール写真"
+          @change="onAvatarChange"
+          name="profile[avatar]"
+        >
+        <v-card class="d-flex flex-row justify-center" elevation="0">
+          <v-img
+            :src="prevAvatar"
+            max-height="100"
+            max-width="100"
+            aspect-ratio="1"
+            class="rounded-circle"
+          ></v-img>
+        </v-card>
+        <v-text-field
+          label="description"
+          v-model="profile.description"
+        ></v-text-field>
+
+        <input
+          type="file"
+          label="ポートフォリオ画像"
+          @change="onWorksChange"
+          multiple
+          name="profile[works][]"
+        >
+
+        <v-layout class="d-flex flex-row justify-center" elevation="0">
+            <!-- <v-badge
+              v-for="(work, index) in prevWorks"
+              v-bind:key="index"
+              bottom offset-x="20" offset-y="20" overlap color="rgba(0,0,0,0)"
+            > -->
+              <!-- <v-btn
+                slot="badge"
+                class="delete-button"
+                fab
+                height="20"
+                width="20"
+                @click="deleteWork(index)"
+              >
+                <v-icon>mdi-close-circle</v-icon>
+              </v-btn> -->
+              <v-col
+                cols="auto"
+                v-for="(work, index) in prevWorks"
+                v-bind:key="index"
+              >
+                <v-badge
+                  bottom overlap color="rgba(0,0,0,0)"
+                >
+                  <v-btn @click="deleteWork(index)" slot="badge" fab height="20" width="20">
+                    <v-icon>mdi-close-circle</v-icon>
+                  </v-btn>
+                  <v-avatar size="80" rounded>
+                    <v-img
+                    :src="work"
+                    max-height="100"
+                    max-width="100"
+                    aspect-ratio="1"
+                  ></v-img>
+                  </v-avatar>
+                </v-badge>
+              </v-col>
+        </v-layout>
+        <v-layout class="d-flex flex-row justify-center">
+          <v-btn @click="createProfile" :disabled="profile.greeting === ''" rounded>
+            ポートフォリオを保存
+          </v-btn>
+        </v-layout>
+      </v-form>
+    </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
+import { mapGetters } from 'vuex'
 export default {
   name: 'Portfolio',
   data: () => ({
@@ -62,18 +139,26 @@ export default {
       avatar: '',
       greeting: '',
       description: '',
-      works: []
+      works: [],
+      id: Number,
+      user_id: Number
     },
     prevAvatar: '',
-    prevWorks: []
+    prevWorks: [],
+    isEditMode: false,
+    editBtn: '編集する'
   }),
+  created () {
+    this.fetchProfile(this.$route.query.id)
+  },
+  computed: {
+    ...mapGetters('user', ['isAuthenticated']),
+    logedIn () {
+      return this.isAuthenticated
+    }
+  },
   methods: {
     getBase64 (file) {
-      // const reader = new FileReader()
-      // reader.readAsDataURL(file)
-      // reader.onload = () => {
-      //   return reader.result
-      // }
       return new Promise((resolve, reject) => {
         const reader = new FileReader()
         reader.readAsDataURL(file)
@@ -93,12 +178,9 @@ export default {
     async onAvatarChange (e) {
       const avatar = e.target.files[0]
       this.profile.avatar = avatar
-      // console.log(this.getBase64(avatar))
       this.prevAvatar = await this.getBase64(avatar)
         .then(image => image)
         .catch(error => console.log(error))
-      // .then(image => image )
-      // .catch(error => this.setError(error, '画像のアップロードに失敗しました。'))
     },
     async createProfile () {
       const formData = new FormData()
@@ -119,15 +201,47 @@ export default {
             'content-Type': 'multipart/form-data'
           }
       }
-      const res = await axios.post('http://localhost:3000/v1/profiles', formData, headers)
+      const res = await axios.patch(`http://localhost:3000/v1/profiles/${this.profile.id}`, formData, headers)
         .then(response => response.data)
         .catch(err => console.log(err))
-      this.$router.push({
-        path: '/portfolio',
-        query: {
-          portfolio: res
-        }
-      })
+      this.profile = res
+      this.toggleEditMode = !this.toggleEditMode
+    },
+    async fetchProfile (userId) {
+      const prof = await axios.get(`http://localhost:3000/v1/profiles/${userId}`)
+        .then(response => response.data)
+        .catch(err => console.log(err))
+      this.profile.description = prof.description
+      this.profile.greeting = prof.greeting
+      this.profile.id = prof.id
+      this.profile.user_id = prof.user_id
+      this.prevAvatar = prof.avatar_url
+      this.prevWorks = prof.works_url
+      this.profile.avatar = await fetch(prof.avatar_url)
+        .then(response => response.blob())
+        .then(blob => new File([blob], `${prof.user_id}_avatar.png`))
+      // prof.works_urlからファイルデータを生成してprofile.worksに入れる
+      for (var index = 0; index < prof.works_url.length; index++) {
+        await fetch(prof.works_url[index])
+          .then(response => response.blob())
+          .then(blob => new File([blob], `work_image${index}.png`))
+          .then(file => {
+            this.profile.works.push(file)
+          })
+      }
+    },
+    deleteWork (i) {
+      this.profile.works.splice(i, 1)
+      this.prevWorks.splice(i, 1)
+      console.log(this.prevWorks)
+    },
+    toggleEditMode () {
+      this.isEditMode = !this.isEditMode
+      if (this.isEditMode) {
+        this.editBtn = '戻る'
+      } else {
+        this.editBtn = '編集する'
+      }
     }
   }
 }

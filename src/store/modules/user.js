@@ -13,6 +13,7 @@ const state = {
 }
 
 const getters = {
+  userId: state => state.id,
   user: state => state,
   isAuthenticated (state) {
     return !!state.uid
@@ -33,7 +34,8 @@ const mutations = {
     localStorage.setItem('headers', JSON.stringify({
       accessToken: user.headers['access-token'],
       client: user.headers.client,
-      uid: user.data.data.uid
+      uid: user.data.data.uid,
+      id: user.data.data.id
     }))
   },
   removeUser (state) {
@@ -50,6 +52,10 @@ const mutations = {
     state.accessToken = user.accessToken
     state.client = user.client
     state.uid = user.uid
+    state.id = user.id
+    state.expiry = user.expiry
+    state.designer = user.designer
+    state.name = user.name
   }
 }
 

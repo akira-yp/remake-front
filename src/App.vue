@@ -25,7 +25,7 @@
           <router-link to="/itemcreate" >アイテムを出品する</router-link>
         </v-list-item>
         <v-list-item>
-          <router-link to="/portfolio">ポートフォリオ</router-link>
+          <a @click="toPortfolio">ポートフォリオ</a>
         </v-list-item>
         <v-list-item>
           <router-link to="/designers">リメイクデザイナーを探す</router-link>
@@ -56,16 +56,18 @@ export default {
 
   data: () => ({
     drawer: null,
-    user: []
+    userid: null
   }),
   created () {
     if (this.$store.state.user.client === null) {
       const localData = JSON.parse(localStorage.getItem('headers'))
       this.setAuthToStore(localData)
     }
+    this.userid = this.user.id
+    console.log(this.user.id)
   },
   computed: {
-    ...mapGetters('user', ['isAuthenticated']),
+    ...mapGetters('user', ['user', 'isAuthenticated']),
     logedIn () {
       return this.isAuthenticated
     }
@@ -86,9 +88,25 @@ export default {
       localStorage.setItem('headers', JSON.stringify({
         accessToken: this.user['acccess-token'],
         client: this.user.client,
-        uid: this.user.uid
+        uid: this.user.uid,
+        id: this.user.id,
+        designer: this.user.designer,
+        name: this.user.name,
+        expiry: this.user.expiry
       }))
+    },
+    toPortfolio () {
+      this.$router.push({
+        path: '/portfolio',
+        query: {
+          id: this.user.id
+        }
+      })
     }
+    // getUserId () {
+    //   this.data.userid = this.$store.state.user.id
+    //   console.log(this)
+    // }
     // setAuthToStore () {
     //   const localItems = localStorage.getItem('headers')
     //   console.log(localItems)
