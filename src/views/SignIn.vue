@@ -1,17 +1,8 @@
 <template>
   <div>
-    <!-- <div v-if="client === ''">
-      <h1>Sign Up</h1>
-      <label for="name">name</label>
-      <input id="name" type="text" v-model="name" />
-      <label for="email">email</label>
-      <input id="email" type="email" v-model="email" />
-      <label for="password">password</label>
-      <input id="password" type="password" v-model="password" />
-      <button @click="signUp">アカウント登録</button>
-    </div> -->
     <div>
         <h1>SignIn</h1>
+        <p v-if="message !== ''">{{ message }}</p>
         <v-form>
           <v-text-field
             label="e-mail"
@@ -47,7 +38,8 @@ export default {
   data: () => ({
     email: '',
     password: '',
-    client: ''
+    client: '',
+    message: ''
   }),
   computed: {
     ...mapGetters('user', ['user', 'isAuthenticated']),
@@ -69,13 +61,20 @@ export default {
   },
   methods: {
     ...mapActions('user', ['authUser']),
-    signIn () {
+    async signIn () {
       const params = {
         email: this.email,
         password: this.password
       }
-      this.authUser(params)
-      this.$router.push('/items')
+      await this.authUser(params)
+        .then(this.afterLogIn)
+    },
+    afterLogIn () {
+      if (this.logedIn) {
+        this.$router.push('/items')
+      } else {
+        this.message = 'Emailまたはパスワードが間違っています'
+      }
     }
     // setLocalStorage () {
     //   localStorage.setItem('headers', JSON.stringify({

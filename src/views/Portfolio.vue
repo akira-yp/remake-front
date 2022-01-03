@@ -6,7 +6,7 @@
           <h1>Portfolio</h1>
         </v-flex>
         <v-flex shrink>
-          <v-btn v-if="logedIn" @click="toggleEditMode" rounded>{{ editBtn }}</v-btn>
+          <v-btn v-if="isCurrentUser" @click="toggleEditMode" rounded>{{ editBtn }}</v-btn>
         </v-flex>
       </v-layout>
     </v-container>
@@ -82,21 +82,6 @@
         >
 
         <v-layout class="d-flex flex-row justify-center" elevation="0">
-            <!-- <v-badge
-              v-for="(work, index) in prevWorks"
-              v-bind:key="index"
-              bottom offset-x="20" offset-y="20" overlap color="rgba(0,0,0,0)"
-            > -->
-              <!-- <v-btn
-                slot="badge"
-                class="delete-button"
-                fab
-                height="20"
-                width="20"
-                @click="deleteWork(index)"
-              >
-                <v-icon>mdi-close-circle</v-icon>
-              </v-btn> -->
               <v-col
                 cols="auto"
                 v-for="(work, index) in prevWorks"
@@ -140,8 +125,8 @@ export default {
       greeting: '',
       description: '',
       works: [],
-      id: Number,
-      user_id: Number
+      id: null,
+      user_id: null
     },
     prevAvatar: '',
     prevWorks: [],
@@ -155,6 +140,9 @@ export default {
     ...mapGetters('user', ['isAuthenticated']),
     logedIn () {
       return this.isAuthenticated
+    },
+    isCurrentUser () {
+      return this.$store.state.user.id === Number(this.profile.user_id)
     }
   },
   methods: {
@@ -233,7 +221,6 @@ export default {
     deleteWork (i) {
       this.profile.works.splice(i, 1)
       this.prevWorks.splice(i, 1)
-      console.log(this.prevWorks)
     },
     toggleEditMode () {
       this.isEditMode = !this.isEditMode

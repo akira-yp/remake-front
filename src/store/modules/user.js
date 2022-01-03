@@ -63,7 +63,7 @@ const actions = {
   async authUser ({ commit }, auth) {
     await axios.post(`${apiUrl}/v1/auth/sign_in`, auth)
       .then(response => { commit('setUser', response) })
-      .catch(error => { console.log(error) })
+      .catch(error => { return error })
   },
   async deleteSession ({ commit }, auth) {
     await axios.delete(`${apiUrl}/v1/auth/sign_out`, auth)

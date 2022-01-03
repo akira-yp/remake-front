@@ -28,7 +28,6 @@ import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'ItemIndex',
   data: () => ({
-    items: this.items()
   }),
   created () {
     this.fetchItems()
