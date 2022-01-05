@@ -72,11 +72,59 @@
     </div>
 
     <div else>
-      <p>{{ assign.description }}</p>
-      <v-img
-      :src="prevImages[0]"
-      ></v-img>
-      <p>{{ assign.budget }}</p>
+      <v-container>
+        <v-row justify="center">
+          <v-col>
+            <v-img
+            :src="prevImages[0]"
+            class="rounded-xl"
+            aspect-ratio="1"
+            ></v-img>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-card outlined class="rounded-xl">
+              <v-card-title>リメイクの依頼内容</v-card-title>
+              <v-card-text>
+              {{ assign.description }}
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-card flat>
+            <v-container>
+              <v-row justify-space-between>
+                <v-col cols="auto">
+                  <v-card-title color v-if="!editMode">
+                  依頼額：¥{{ assign.budget }}
+                  </v-card-title>
+                  <v-text-field
+                  v-else
+                  type="number"
+                  prefix="¥"
+                  label="リメイクの予算"
+                  min="300"
+                  max="990000"
+                  placeholder="300~990,000"
+                  v-model.number="assign.budget"
+                  outlined
+                  rounded></v-text-field>
+                </v-col>
+                <v-col cols="auto">
+                  <v-card-title v-if="!editMode">
+                    <v-btn @click="toggleEditMode" rounded small>金額を変更</v-btn>
+                  </v-card-title>
+                  <v-card-title v-else>
+                    <v-btn @click="updateAssign" rounded small>変更</v-btn>
+                  </v-card-title>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card>
+        </v-row>
+      </v-container>
     </div>
   </div>
 </template>
@@ -157,7 +205,7 @@ export default {
       const res = await axios.post('http://localhost:3000/v1/assigns', assignData, headers)
         .then(response => response.data)
         .catch(err => console.log(err))
-      console.log(res)
+      this.assign.status = res.status
     },
     async fetchAssign (id) {
       const assign = await axios.get(`http://localhost:3000/v1/assigns/${id}`)
@@ -178,6 +226,36 @@ export default {
             this.assign.images.push(file)
           })
       }
+    },
+    async updateAssign () {
+      const updateData = new FormData()
+      // updateData.append('assign[id]', this.assign.id)
+      updateData.append('assign[description]', this.assign.description)
+      updateData.append('assign[budget]', this.assign.budget)
+      updateData.append('assign[status]', 0)
+      updateData.append('assign[designer_id]', this.assign.designer_id)
+      if (this.assign.images.length) {
+        for (const image of this.assign.images) {
+          updateData.append('assign[images]' + '[]', image)
+        }
+      }
+      const headers = {
+        headers:
+          {
+            uid: this.$store.state.user.uid,
+            'access-token': this.$store.state.user.accessToken,
+            client: this.$store.state.user.client,
+            'content-Type': 'multipart/form-data'
+          }
+      }
+      const newBudget = await axios.patch(`http://localhost:3000/v1/assigns/${this.assign.id}`, updateData, headers)
+        .then(response => response.data)
+        .catch(err => console.log(err))
+      this.assign.budget = newBudget.budget
+      this.editMode = false
+    },
+    toggleEditMode () {
+      this.editMode = !this.editMode
     }
   }
 }
