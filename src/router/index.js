@@ -9,6 +9,8 @@ import ItemIndex from '../views/ItemIndex.vue'
 import SignUp from '../views/SignUp.vue'
 import Portfolio from '../views/Portfolio.vue'
 import DesignersIndex from '../views/DesignersIndex.vue'
+import Assign from '../views/Assign.vue'
+import MyPage from '../views/MyPage.vue'
 
 Vue.use(VueRouter)
 
@@ -58,6 +60,16 @@ const routes = [
     path: '/designers',
     name: 'DesignersIndex',
     component: DesignersIndex
+  },
+  {
+    path: '/assign',
+    name: 'Assign',
+    component: Assign
+  },
+  {
+    path: '/mypage',
+    name: 'MyPage',
+    component: MyPage
   }
 ]
 

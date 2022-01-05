@@ -30,6 +30,9 @@
         <v-list-item>
           <router-link to="/designers">リメイクデザイナーを探す</router-link>
         </v-list-item>
+        <v-list-item v-if="logedIn">
+          <a @click="toMypage">マイページ</a>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
@@ -67,7 +70,7 @@ export default {
     console.log(this.user.id)
   },
   computed: {
-    ...mapGetters('user', ['user', 'isAuthenticated']),
+    ...mapGetters('user', ['user', 'userId', 'isAuthenticated']),
     logedIn () {
       return this.isAuthenticated
     }
@@ -102,18 +105,15 @@ export default {
           id: this.user.id
         }
       })
+    },
+    toMypage () {
+      this.$router.push({
+        path: '/mypage',
+        query: {
+          id: this.userId
+        }
+      })
     }
-    // getUserId () {
-    //   this.data.userid = this.$store.state.user.id
-    //   console.log(this)
-    // }
-    // setAuthToStore () {
-    //   const localItems = localStorage.getItem('headers')
-    //   console.log(localItems)
-    //   this.user['access-token'] = localItems.accessToken
-    //   this.user.client = localItems.client
-    //   this.user.client = localItems.uid
-    // }
   }
 }
 </script>

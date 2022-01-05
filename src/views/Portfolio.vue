@@ -16,12 +16,17 @@
         <v-card width="70%">
           <v-layout justify-center mt-3>
             <v-img
+            v-if="prevAvatar"
             :src="prevAvatar"
             max-height="100"
             max-width="100"
             aspect-ratio="1"
             class="rounded-circle"
             ></v-img>
+            <v-icon
+            size="100"
+            else
+            >mdi-account</v-icon>
           </v-layout>
           <v-card-text>
             <p>{{ profile.greeting }}</p>
@@ -44,6 +49,10 @@
             class="ma-1 rounded-xl"
           ></v-img>
       </v-card>
+      <v-layout v-if="logedIn && !isCurrentUser" justify-center ma-5>
+        <v-btn @click="toAssign" rounded>リメイクを依頼する</v-btn>
+      </v-layout>
+
     </div>
 
     <div d-flex flex-row justify-center>
@@ -137,7 +146,7 @@ export default {
     this.fetchProfile(this.$route.query.id)
   },
   computed: {
-    ...mapGetters('user', ['isAuthenticated']),
+    ...mapGetters('user', ['userId', 'isAuthenticated']),
     logedIn () {
       return this.isAuthenticated
     },
@@ -229,6 +238,15 @@ export default {
       } else {
         this.editBtn = '編集する'
       }
+    },
+    async toAssign () {
+      this.$router.push({
+        path: '/assign',
+        query: {
+          owner_id: this.userId,
+          designer_id: this.profile.user_id
+        }
+      })
     }
   }
 }
