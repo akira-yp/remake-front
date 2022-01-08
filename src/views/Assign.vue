@@ -71,16 +71,27 @@
       </v-container>
     </div>
 
-    <div else>
+    <div v-else>
       <v-container>
         <v-row justify="center">
           <v-col>
             <v-img
-            :src="prevImages[0]"
+            :src="prevImages[getImgIndex]"
             class="rounded-xl"
             aspect-ratio="1"
             ></v-img>
           </v-col>
+        </v-row>
+        <v-row justify="center">
+          <v-avatar
+          v-for="(img, i) in prevImages"
+          :key="i"
+          size="40"
+          >
+            <v-img :src="img"
+              @click="changePreview(i)"
+            ></v-img>
+          </v-avatar>
         </v-row>
         <v-row>
           <v-col>
@@ -95,9 +106,9 @@
         <v-row>
           <v-card flat>
             <v-container>
-              <v-row justify-space-between>
+              <v-row justify-space-between no-gutters>
                 <v-col cols="auto">
-                  <v-card-title color v-if="!editMode">
+                  <v-card-title v-if="!editMode">
                   依頼額：¥{{ assign.budget }}
                   </v-card-title>
                   <v-text-field
@@ -110,9 +121,10 @@
                   placeholder="300~990,000"
                   v-model.number="assign.budget"
                   outlined
+                  fluid
                   rounded></v-text-field>
                 </v-col>
-                <v-col cols="auto">
+                <v-col cols="auto" v-if="checkUserOwner">
                   <v-card-title v-if="!editMode">
                     <v-btn @click="toggleEditMode" rounded small>金額を変更</v-btn>
                   </v-card-title>
@@ -126,12 +138,52 @@
         </v-row>
       </v-container>
     </div>
+
+    <div v-if="assign.status !== null">
+      <v-container>
+        <v-row no-gutters>
+          <v-col cols="12">
+            <v-text-field
+            label="相手へのメッセージ"
+            v-model="chat.content"
+            outlined
+            rounded
+            hide-details="auto"
+            >
+            </v-text-field>
+          </v-col>
+        </v-row>
+        <v-row justify="end" no-gutters p-0>
+          <v-btn @click="postChat" rounded ma-0>
+            <v-icon>mdi-comment-plus-outline</v-icon>
+          </v-btn>
+        </v-row>
+      </v-container>
+      <v-container>
+        <v-row>
+          <v-col>
+            <v-card
+            v-for="(chat, index) in chats"
+            :key="index"
+            class="rounded-xl"
+            color="primary"
+            >
+              <v-card-text>
+                {{ chat.content }}
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+    </div>
+
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import axios from 'axios'
+// import { getAuthDataFromStorage } from '../api/auth.js'
 
 export default {
   name: 'Assign',
@@ -146,7 +198,14 @@ export default {
       images: []
     },
     prevImages: [],
-    editMode: true
+    selectedImg: 0,
+    editMode: true,
+    chat: {
+      userid: null,
+      content: '',
+      figure: null
+    },
+    chats: []
   }),
   created () {
     if (this.$route.query.id === undefined) {
@@ -155,10 +214,17 @@ export default {
     } else {
       this.fetchAssign(this.$route.query.id)
       this.editMode = false
+      this.chat.userid = this.userId
     }
   },
   computed: {
-    ...mapGetters('user', ['isAuthenticated'])
+    ...mapGetters('user', ['userId', 'isAuthenticated']),
+    getImgIndex () {
+      return this.selectedImg
+    },
+    checkUserOwner () {
+      return this.assign.owner_id === this.userId
+    }
   },
   methods: {
     getBase64 (file) {
@@ -248,14 +314,40 @@ export default {
             'content-Type': 'multipart/form-data'
           }
       }
-      const newBudget = await axios.patch(`http://localhost:3000/v1/assigns/${this.assign.id}`, updateData, headers)
+      const newBudget = await axios
+        .patch(`http://localhost:3000/v1/assigns/${this.assign.id}`, updateData, headers)
         .then(response => response.data)
         .catch(err => console.log(err))
       this.assign.budget = newBudget.budget
       this.editMode = false
     },
+    async postChat () {
+      const chatForm = new FormData()
+      chatForm.append('chat[assign_id]', this.assign.id)
+      chatForm.append('chat[content]', this.chat.content)
+      if (this.chat.figure !== null) {
+        chatForm.append('chat[figure]', this.chat.figure)
+      }
+      const headers = {
+        headers:
+          {
+            uid: this.$store.state.user.uid,
+            'access-token': this.$store.state.user.accessToken,
+            client: this.$store.state.user.client,
+            'content-Type': 'multipart/form-data'
+          }
+      }
+      await axios
+        .post('http://localhost:3000/v1/chats', chatForm, headers)
+        .then(response => { this.chats.push(response.data) })
+        .catch(err => console.log(err))
+      console.log(this.chats)
+    },
     toggleEditMode () {
       this.editMode = !this.editMode
+    },
+    changePreview (i) {
+      this.selectedImg = i
     }
   }
 }

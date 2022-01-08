@@ -13,6 +13,9 @@ const state = {
 }
 
 const getters = {
+  isDesigner (state) {
+    return state.designer === true
+  },
   userId: state => state.id,
   user: state => state,
   isAuthenticated (state) {
@@ -35,7 +38,8 @@ const mutations = {
       accessToken: user.headers['access-token'],
       client: user.headers.client,
       uid: user.data.data.uid,
-      id: user.data.data.id
+      id: user.data.data.id,
+      designer: user.data.data.designer
     }))
   },
   removeUser (state) {

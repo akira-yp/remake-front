@@ -16,7 +16,7 @@
         <v-card width="70%">
           <v-layout justify-center mt-3>
             <v-img
-            v-if="prevAvatar"
+            v-if="prevAvatar !== null"
             :src="prevAvatar"
             max-height="100"
             max-width="100"
@@ -25,7 +25,7 @@
             ></v-img>
             <v-icon
             size="100"
-            else
+            v-else
             >mdi-account</v-icon>
           </v-layout>
           <v-card-text>
@@ -198,14 +198,33 @@ export default {
             'content-Type': 'multipart/form-data'
           }
       }
-      const res = await axios.patch(`http://localhost:3000/v1/profiles/${this.profile.id}`, formData, headers)
+      const res = await axios
+        .patch(`http://localhost:3000/v1/profiles/${this.profile.id}`, formData, headers)
         .then(response => response.data)
         .catch(err => console.log(err))
-      this.profile = res
-      this.toggleEditMode = !this.toggleEditMode
+      this.profile.description = res.description
+      this.profile.greeting = res.greeting
+      this.profile.id = res.id
+      this.profile.user_id = res.user_id
+      this.prevAvatar = res.avatar_url
+      this.prevWorks = res.works_url
+      this.profile.avatar = await fetch(res.avatar_url)
+        .then(response => response.blob())
+        .then(blob => new File([blob], `${res.user_id}_avatar.png`))
+      // prof.works_urlからファイルデータを生成してprofile.worksに入れる
+      for (var i = 0; i < res.works_url.length; i++) {
+        await fetch(res.works_url[i])
+          .then(response => response.blob())
+          .then(blob => new File([blob], `work_image${i}.png`))
+          .then(file => {
+            this.profile.works.push(file)
+          })
+      }
+      this.toggleEditMode()
     },
     async fetchProfile (userId) {
-      const prof = await axios.get(`http://localhost:3000/v1/profiles/${userId}`)
+      const prof = await axios
+        .get(`http://localhost:3000/v1/profiles/${userId}`)
         .then(response => response.data)
         .catch(err => console.log(err))
       this.profile.description = prof.description
@@ -232,11 +251,12 @@ export default {
       this.prevWorks.splice(i, 1)
     },
     toggleEditMode () {
-      this.isEditMode = !this.isEditMode
       if (this.isEditMode) {
-        this.editBtn = '戻る'
-      } else {
+        this.isEditMode = false
         this.editBtn = '編集する'
+      } else {
+        this.isEditMode = true
+        this.editBtn = '戻る'
       }
     },
     async toAssign () {

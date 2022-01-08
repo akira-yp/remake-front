@@ -71,7 +71,6 @@ export default {
       formData.append('password', this)
     }
   }
-
 }
 </script>
 
