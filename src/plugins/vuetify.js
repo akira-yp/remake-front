@@ -10,6 +10,7 @@ export default new Vuetify({
         remake: '#8BC34A',
         remake_l: '#8BC34A',
         remaake_d: '#689F38',
+        remake_bg: '#DCEDC8',
         text: '#212121',
         text_s: '#757575',
         accent: '#FFC107',

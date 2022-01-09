@@ -1,6 +1,144 @@
 <template>
   <div>
-    <div v-if="assign.status === null">
+    <div v-if="assign.status !== null">
+      <v-container>
+        <v-row justify="center">
+          <v-col>
+            <v-img
+            :src="prevImages[getImgIndex]"
+            class="rounded-xl"
+            aspect-ratio="1"
+            ></v-img>
+          </v-col>
+        </v-row>
+        <v-row justify="center">
+          <v-avatar
+          v-for="(img, i) in prevImages"
+          :key="i"
+          size="40"
+          >
+            <v-img :src="img"
+              @click="changePreview(i)"
+            ></v-img>
+          </v-avatar>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-card outlined class="rounded-xl">
+              <v-card-title>リメイクの依頼内容</v-card-title>
+              <v-card-text>
+              {{ assign.description }}
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-card flat>
+            <v-container>
+              <v-row justify-space-between no-gutters>
+                <v-col cols="auto">
+                  <v-card-title v-if="!editMode && this.assign.status === 0">
+                  依頼額：¥{{ assign.budget }}
+                  </v-card-title>
+                  <v-text-field
+                  v-else
+                  type="number"
+                  prefix="¥"
+                  label="リメイクの予算"
+                  min="300"
+                  max="990000"
+                  placeholder="300~990,000"
+                  v-model.number="assign.budget"
+                  outlined
+                  fluid
+                  rounded></v-text-field>
+                </v-col>
+                <v-col cols="auto" v-if="checkUserOwner">
+                  <v-card-title v-if="!editMode">
+                    <v-btn @click="toggleEditMode" rounded small>金額を変更</v-btn>
+                  </v-card-title>
+                  <v-card-title v-else>
+                    <v-btn @click="updateAssign" rounded small>変更</v-btn>
+                  </v-card-title>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card>
+        </v-row>
+        <v-row v-if="isDesigner">
+          <v-col>
+            <v-btn @click="acceptAssign" rounded>この内容で依頼を引き受ける</v-btn>
+          </v-col>
+        </v-row>
+      </v-container>
+      <v-container>
+        <v-row no-gutters>
+          <v-col cols="12">
+            <v-textarea
+            label="相手へのメッセージ"
+            v-model="chat.content"
+            outlined
+            rounded
+            clearable
+            hide-details="auto"
+            >
+            </v-textarea>
+          </v-col>
+        </v-row>
+        <v-row justify="end" no-gutters p-0>
+          <v-file-input prepend-icon="mdi-camera" @change="setFig">
+          </v-file-input>
+          <v-btn @click="postChat" fab small elevation="2" class="ma-1">
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
+        </v-row>
+      </v-container>
+      <v-container>
+        <v-row
+        v-for="(chat, index) in chats"
+        :key="index"
+        v-bind:class="{ 'flex-row-reverse': chat.userid === assign.owner_id }">
+          <v-col>
+            <v-card
+            class="rounded-xl"
+            >
+              <v-img
+                v-if="chat.figure_url !== null"
+                :src="chat.figure_url"
+                @click.stop="popupFigure(chat)"
+                aspect-ratio="1"
+                max-height="200"
+              ></v-img>
+              <v-card-text v-if="chat.content !== ''">
+                {{ chat.content }}
+              </v-card-text>
+            </v-card>
+
+          </v-col>
+          <v-col cols="auto">
+            <v-card flat class="text-center">
+              <v-avatar>
+                <v-img v-if="chat.avatar !== null" :src="chat.avatar"></v-img>
+                <v-icon v-else>mdi-account</v-icon>
+              </v-avatar>
+              <v-card-text class="pa-0">{{ chat.name }}</v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+      <v-dialog v-model="dialog" fullscreen>
+        <v-card ma-0>
+          <v-img :src="currentChat">
+          </v-img>
+          <v-card-actions>
+            <v-btn @click="dialog = false" fab small>
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </div>
+    <div v-else>
       <h2>リメイク依頼</h2>
       <input
         type="file"
@@ -70,113 +208,6 @@
         </v-row>
       </v-container>
     </div>
-
-    <div v-else>
-      <v-container>
-        <v-row justify="center">
-          <v-col>
-            <v-img
-            :src="prevImages[getImgIndex]"
-            class="rounded-xl"
-            aspect-ratio="1"
-            ></v-img>
-          </v-col>
-        </v-row>
-        <v-row justify="center">
-          <v-avatar
-          v-for="(img, i) in prevImages"
-          :key="i"
-          size="40"
-          >
-            <v-img :src="img"
-              @click="changePreview(i)"
-            ></v-img>
-          </v-avatar>
-        </v-row>
-        <v-row>
-          <v-col>
-            <v-card outlined class="rounded-xl">
-              <v-card-title>リメイクの依頼内容</v-card-title>
-              <v-card-text>
-              {{ assign.description }}
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-card flat>
-            <v-container>
-              <v-row justify-space-between no-gutters>
-                <v-col cols="auto">
-                  <v-card-title v-if="!editMode">
-                  依頼額：¥{{ assign.budget }}
-                  </v-card-title>
-                  <v-text-field
-                  v-else
-                  type="number"
-                  prefix="¥"
-                  label="リメイクの予算"
-                  min="300"
-                  max="990000"
-                  placeholder="300~990,000"
-                  v-model.number="assign.budget"
-                  outlined
-                  fluid
-                  rounded></v-text-field>
-                </v-col>
-                <v-col cols="auto" v-if="checkUserOwner">
-                  <v-card-title v-if="!editMode">
-                    <v-btn @click="toggleEditMode" rounded small>金額を変更</v-btn>
-                  </v-card-title>
-                  <v-card-title v-else>
-                    <v-btn @click="updateAssign" rounded small>変更</v-btn>
-                  </v-card-title>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-card>
-        </v-row>
-      </v-container>
-    </div>
-
-    <div v-if="assign.status !== null">
-      <v-container>
-        <v-row no-gutters>
-          <v-col cols="12">
-            <v-text-field
-            label="相手へのメッセージ"
-            v-model="chat.content"
-            outlined
-            rounded
-            hide-details="auto"
-            >
-            </v-text-field>
-          </v-col>
-        </v-row>
-        <v-row justify="end" no-gutters p-0>
-          <v-btn @click="postChat" rounded ma-0>
-            <v-icon>mdi-comment-plus-outline</v-icon>
-          </v-btn>
-        </v-row>
-      </v-container>
-      <v-container>
-        <v-row>
-          <v-col>
-            <v-card
-            v-for="(chat, index) in chats"
-            :key="index"
-            class="rounded-xl"
-            color="primary"
-            >
-              <v-card-text>
-                {{ chat.content }}
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-    </div>
-
   </div>
 </template>
 
@@ -200,12 +231,14 @@ export default {
     prevImages: [],
     selectedImg: 0,
     editMode: true,
+    dialog: false,
     chat: {
       userid: null,
       content: '',
       figure: null
     },
-    chats: []
+    chats: [],
+    currentChat: null
   }),
   created () {
     if (this.$route.query.id === undefined) {
@@ -224,6 +257,9 @@ export default {
     },
     checkUserOwner () {
       return this.assign.owner_id === this.userId
+    },
+    isDesigner () {
+      return this.assign.designer_id === this.userId
     }
   },
   methods: {
@@ -277,7 +313,6 @@ export default {
       const assign = await axios.get(`http://localhost:3000/v1/assigns/${id}`)
         .then(response => response.data)
         .catch(err => console.log(err))
-      console.log(assign)
       this.prevImages = assign.images_url
       assign.imagesUrl = assign.images_url
       delete assign.images_url
@@ -292,13 +327,14 @@ export default {
             this.assign.images.push(file)
           })
       }
+      this.fetchChats()
     },
     async updateAssign () {
       const updateData = new FormData()
       // updateData.append('assign[id]', this.assign.id)
       updateData.append('assign[description]', this.assign.description)
       updateData.append('assign[budget]', this.assign.budget)
-      updateData.append('assign[status]', 0)
+      updateData.append('assign[status]', this.assign.status)
       updateData.append('assign[designer_id]', this.assign.designer_id)
       if (this.assign.images.length) {
         for (const image of this.assign.images) {
@@ -339,9 +375,42 @@ export default {
       }
       await axios
         .post('http://localhost:3000/v1/chats', chatForm, headers)
-        .then(response => { this.chats.push(response.data) })
+        .then(response => {
+          this.chats.unshift(response.data)
+          this.chat.content = ''
+          this.chats.splice(0, 0)
+        })
         .catch(err => console.log(err))
-      console.log(this.chats)
+    },
+    async fetchChats () {
+      // const headers = {
+      //   headers:
+      //     {
+      //       uid: this.$store.state.user.uid,
+      //       'access-token': this.$store.state.user.accessToken,
+      //       client: this.$store.state.user.client,
+      //       'content-Type': 'multipart/form-data'
+      //     }
+      // }
+      const assignParams = { params: { assign_id: this.assign.id } }
+      await axios.get('http://localhost:3000/v1/chats', assignParams)
+        .then(response => {
+          this.chats = response.data
+          console.log(response.data)
+        })
+        .catch(err => console.log(err))
+    },
+    acceptAssign () {
+      this.assign.status = 1
+      this.updateAssign()
+    },
+    setFig (file) {
+      const fig = file
+      this.chat.figure = fig
+    },
+    popupFigure (chat) {
+      this.currentChat = chat.figure_url
+      this.dialog = true
     },
     toggleEditMode () {
       this.editMode = !this.editMode

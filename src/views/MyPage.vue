@@ -1,8 +1,10 @@
 <template>
   <div>
-    <v-container v-if="checkUserRoll">
+    <v-container v-if="checkUserRoll && assignedItems.length > 0">
       <v-row>
-        <h2>リメイク案件一覧</h2>
+        <v-col>
+          <h4 class="accent--text">{{ assignedItems.length }}のリメイク依頼があります</h4>
+        </v-col>
       </v-row>
       <v-row>
         <v-col
@@ -21,7 +23,7 @@
         </v-col>
       </v-row>
     </v-container>
-    <v-container>
+    <v-container v-if="assignItems.length > 0">
       <v-row>
         <h2>リメイク依頼したアイテム一覧</h2>
       </v-row>
