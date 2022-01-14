@@ -1,10 +1,30 @@
 <template>
   <div>
-
-    <top-entrance />
-    <div v-if="!currentuser">
-      <v-btn rounded @click="toSignupPageAsUser()">アカウント登録する</v-btn>
-      <v-btn rounded @click="toSignupPageAsDesigner()">デザイナーとして登録する場合はこちら</v-btn>
+    <div>
+      <top-entrance @routeEvent="toIndex" />
+    </div>
+    <div class="mt-10">
+      <v-container>
+        <v-row justify="center">
+          <v-btn
+          rounded
+          @click="toSignupPageAsUser()"
+          class="ma-2"
+          color="accent"
+          >
+            アカウント登録する
+          </v-btn>
+        </v-row>
+        <v-row justify="center">
+          <v-btn
+          rounded
+          @click="toSignupPageAsDesigner()"
+          class="ma-2"
+          color="accent"
+          >デザイナーとして登録する場合はこちら
+          </v-btn>
+        </v-row>
+      </v-container>
     </div>
   </div>
 </template>
@@ -19,7 +39,7 @@ export default {
     TopEntrance
   },
   data: () => ({
-    currentuser: Boolean
+    currentuser: false
   }),
   created () {
     this.logedIn()
@@ -45,7 +65,12 @@ export default {
       })
     },
     logedIn () {
-      this.currentuser = this.isAuthenticated
+      if (this.isAuthenticated) {
+        this.$router.push({ path: '/items' })
+      }
+    },
+    toIndex () {
+      this.$router.push({ path: '/items' })
     }
   }
 }

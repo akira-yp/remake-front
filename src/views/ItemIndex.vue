@@ -1,6 +1,17 @@
 <template>
   <div>
     <v-container>
+      <v-row justify="center">
+        <v-col>
+          <v-text-field
+            outlined
+            rounded
+            color="remake_d"
+            prepend-inner-icon="mdi-magnify"
+          >
+          </v-text-field>
+        </v-col>
+      </v-row>
       <v-row>
         <v-col
           v-for="(item, index) in items"
@@ -42,7 +53,7 @@ export default {
         .then(res => this.$router.push({
           path: '/item',
           query: {
-            item: res.data
+            id: res.data.id
           }
         }))
     }

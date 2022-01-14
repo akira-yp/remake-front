@@ -5,41 +5,143 @@
       temporary
       app
     >
-      <v-list>
-        <v-list-item>
-          <router-link to="/" >HOME</router-link>
-        </v-list-item>
-        <v-list-item>
-          <router-link to="/items">アイテムを探す</router-link>
-        </v-list-item>
-        <v-list-item>
-          <router-link to="/about">About</router-link>
-        </v-list-item>
-        <v-list-item v-if="logedIn == false">
-          <router-link to="/sign_in" >ログイン</router-link>
-        </v-list-item>
-        <v-list-item v-if="logedIn == false">
-          <router-link to="/sign_up">アカウント登録</router-link>
-        </v-list-item>
-        <v-list-item>
-          <router-link to="/itemcreate" >アイテムを出品する</router-link>
-        </v-list-item>
-        <v-list-item>
-          <a @click="toPortfolio">ポートフォリオ</a>
-        </v-list-item>
-        <v-list-item>
-          <router-link to="/designers">リメイクデザイナーを探す</router-link>
-        </v-list-item>
-        <v-list-item v-if="logedIn">
-          <a @click="toMypage">マイページ</a>
-        </v-list-item>
+      <v-list dense>
+        <v-list-item-group>
+          <v-list-item>
+            <v-list-item-icon>
+              <v-icon>mdi-home</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <router-link to="/" >HOME</router-link>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-icon>
+              <v-icon>mdi-magnify</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <router-link to="/items">アイテムを探す</router-link>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item v-if="logedIn">
+            <v-list-item-icon>
+              <v-icon>mdi-login</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <router-link to="/sign_in" >ログイン</router-link>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-icon>
+              <v-icon>mdi-upload</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <router-link to="/itemcreate" >アイテムを出品する</router-link>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item v-if="logedIn">
+            <v-list-item-icon>
+              <v-icon>mdi-account-edit</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <a @click="toPortfolio">ポートフォリオを編集する</a>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-icon>
+              <v-icon>
+                mdi-human-greeting
+              </v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <router-link to="/designers">リメイクデザイナーを探す</router-link>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item v-if="logedIn">
+            <v-list-item-icon>
+              <v-icon>mdi-playlist-check</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <a @click="toMypage">マイページ</a>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list-item-group>
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar app>
-      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>RemakeTree</v-toolbar-title>
-      <v-btn v-if="logedIn" depressed @click="signOut">ログアウト</v-btn>
+    <v-app-bar app color="remake" v-if="!isTopPage">
+      <v-app-bar-nav-icon @click="drawer = !drawer" color="white"></v-app-bar-nav-icon>
+      <v-spacer></v-spacer>
+      <v-toolbar-title class="navlogo">RemakeTree</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-menu class="position-absolute end-0">
+        <template v-slot:activator="{ on, attrs }">
+          <v-avatar
+            color="remake_d"
+            size="36"
+            v-bind="attrs"
+            v-on="on"
+          >
+            <span v-if="logedIn" class="white--text">{{ userChars }}</span>
+            <span v-else><v-icon>mdi-account</v-icon></span>
+          </v-avatar>
+        </template>
+          <v-card
+            class="mx-auto"
+            width="256"
+            tile
+          >
+            <v-list dense>
+          <v-list-item-group
+          class="mx-auto"
+          tile
+          >
+            <v-list-item v-if="logedIn">
+                <v-list-item-icon>
+                  <v-icon>mdi-account</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content @click="toMypage">
+                  <v-list-title>マイページ</v-list-title>
+                </v-list-item-content>
+            </v-list-item>
+            <v-list-item v-if="logedIn" @click="toPortfolio">
+              <v-list-item-icon>
+                <v-icon>mdi-account-edit</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-title>ポートフォリオを編集する</v-list-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item @click="signOut" v-if="logedIn">
+              <v-list-item-icon>
+                <v-icon>mdi-logout</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-title>ログアウト</v-list-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item @click="toSignIn" v-if="!logedIn">
+              <v-list-item-icon>
+                <v-icon>mdi-login</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-title>ログイン</v-list-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item @click="toHome" v-if="!logedIn">
+              <v-list-item-icon>
+                <v-icon>mdi-account-plus</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-title>アカウント作成</v-list-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-item-group>
+            </v-list>
+          </v-card>
+      </v-menu>
+      <!-- <v-avatar v-else size="36" color="remake"></v-avatar> -->
+      <!-- <v-btn v-if="logedIn" depressed @click="signOut">ログアウト</v-btn> -->
     </v-app-bar>
 
     <v-main>
@@ -56,7 +158,6 @@ export default {
   name: 'App',
   components: {
   },
-
   data: () => ({
     drawer: null,
     userid: null
@@ -67,12 +168,17 @@ export default {
       this.setAuthToStore(localData)
     }
     this.userid = this.user.id
-    console.log(this.user.id)
   },
   computed: {
     ...mapGetters('user', ['user', 'userId', 'isAuthenticated']),
     logedIn () {
       return this.isAuthenticated
+    },
+    userChars () {
+      return this.user.name.slice(0, 2).toUpperCase()
+    },
+    isTopPage () {
+      return this.$route.path === '/'
     }
   },
   methods: {
@@ -89,7 +195,7 @@ export default {
     },
     setLocalStorage () {
       localStorage.setItem('headers', JSON.stringify({
-        accessToken: this.user['acccess-token'],
+        accessToken: this.user.accessToken,
         client: this.user.client,
         uid: this.user.uid,
         id: this.user.id,
@@ -113,7 +219,24 @@ export default {
           id: this.userId
         }
       })
+    },
+    toHome () {
+      this.$router.push({ path: '/' })
+    },
+    toSignIn () {
+      this.$router.push({ path: '/sign_in' })
     }
   }
 }
 </script>
+
+<style>
+ .navlogo {
+   color: white;
+ }
+
+ a {
+  text-decoration: none;
+  color: #212121 !important;
+ }
+</style>

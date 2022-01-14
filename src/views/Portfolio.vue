@@ -1,124 +1,197 @@
 <template>
   <div>
     <v-container>
-      <v-layout justify-space-between>
+      <v-row justify-space-between class="pa-3">
         <v-flex>
-          <h1>Portfolio</h1>
+          <h2 v-if="!isEditMode">プロフィール</h2>
+          <h2 v-else>プロフィールを作成しよう</h2>
         </v-flex>
         <v-flex shrink>
-          <v-btn v-if="isCurrentUser" @click="toggleEditMode" rounded>{{ editBtn }}</v-btn>
+          <v-btn
+          v-if="isCurrentUser"
+          @click="toggleEditMode"
+          rounded
+          >{{ editBtn }}</v-btn>
         </v-flex>
-      </v-layout>
+      </v-row>
     </v-container>
 
     <div v-if="!isEditMode">
-      <v-layout justify-center>
-        <v-card width="70%">
-          <v-layout justify-center mt-3>
-            <v-img
-            v-if="prevAvatar !== null"
-            :src="prevAvatar"
-            max-height="100"
-            max-width="100"
-            aspect-ratio="1"
-            class="rounded-circle"
-            ></v-img>
-            <v-icon
-            size="100"
-            v-else
-            >mdi-account</v-icon>
-          </v-layout>
-          <v-card-text>
-            <p>{{ profile.greeting }}</p>
-          </v-card-text>
-        </v-card>
-      </v-layout>
-      <v-layout>
-        <v-card flat>
-          <v-card-text>{{ profile.description }}</v-card-text>
-        </v-card>
-      </v-layout>
-      <v-card class="d-flex flex-row justify-center" elevation="0">
-          <v-img
-            v-for="(work, index) in prevWorks"
-            v-bind:key="index"
-            :src="work"
-            max-height="100"
-            max-width="100"
-            aspect-ratio="1"
-            class="ma-1 rounded-xl"
-          ></v-img>
-      </v-card>
+      <v-container>
+        <v-row justify="start">
+          <v-card flat>
+            <v-list>
+              <v-list-item-group>
+                <v-list-item>
+                  <v-list-item-avatar size="60">
+                    <v-img
+                    v-if="prevAvatar !== null"
+                    :src="prevAvatar"
+                    ></v-img>
+                    <v-icon
+                    size="100"
+                    v-else
+                    >mdi-account</v-icon>
+                  </v-list-item-avatar>
+                  <v-list-item-content>
+                    <v-list-item-title>{{ profile.name }}</v-list-item-title>
+                    <v-list-item-subtitle>{{ profile.greeting }}</v-list-item-subtitle>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list-item-group>
+            </v-list>
+          </v-card>
+        </v-row>
+      </v-container>
+      <v-container>
+        <v-row justify="center">
+          <v-card flat>
+            <v-card-text>{{ profile.description }}</v-card-text>
+          </v-card>
+        </v-row>
+        <v-row justify="center">
+          <v-card width="95%" rounded flat>
+            <v-card-title>ポートフォリオ</v-card-title>
+              <v-card-content>
+                <v-container>
+                <v-row>
+                  <v-col
+                  v-for="(work, index) in prevWorks"
+                  v-bind:key="index"
+                  cols="6"
+                  >
+                    <v-img
+                    :src="work"
+                    class="rounded-xl"
+                    aspect-ratio="1"
+                    ></v-img>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-content>
+          </v-card>
+        </v-row>
+      </v-container>
       <v-layout v-if="logedIn && !isCurrentUser" justify-center ma-5>
         <v-btn @click="toAssign" rounded>リメイクを依頼する</v-btn>
       </v-layout>
-
     </div>
 
-    <div d-flex flex-row justify-center>
-      <v-form v-if="isEditMode">
-        <v-text-field
-        label="greeting"
-        v-model="profile.greeting"
-        ></v-text-field>
-
-        <input
-          type="file"
-          label="プロフィール写真"
-          @change="onAvatarChange"
-          name="profile[avatar]"
-        >
-        <v-card class="d-flex flex-row justify-center" elevation="0">
-          <v-img
-            :src="prevAvatar"
-            max-height="100"
-            max-width="100"
-            aspect-ratio="1"
-            class="rounded-circle"
-          ></v-img>
-        </v-card>
-        <v-text-field
-          label="description"
-          v-model="profile.description"
-        ></v-text-field>
-
-        <input
-          type="file"
-          label="ポートフォリオ画像"
-          @change="onWorksChange"
-          multiple
-          name="profile[works][]"
-        >
-
-        <v-layout class="d-flex flex-row justify-center" elevation="0">
-              <v-col
-                cols="auto"
-                v-for="(work, index) in prevWorks"
-                v-bind:key="index"
+    <div v-if="isEditMode">
+      <v-container>
+        <v-row justify="center">
+          <label>プロフィール画像を登録</label>
+        </v-row>
+        <v-row justify="center" class="mb-10">
+          <v-col cols="4">
+            <label for="change_avatar" class="select_file" >
+              <v-icon>mdi-plus</v-icon>
+              <input
+              type="file"
+              label="プロフィール写真"
+              @change="onAvatarChange"
+              name="profile[avatar]"
+              id="change_avatar"
+              style="display:none;"
               >
-                <v-badge
-                  bottom overlap color="rgba(0,0,0,0)"
-                >
-                  <v-btn @click="deleteWork(index)" slot="badge" fab height="20" width="20">
-                    <v-icon>mdi-close-circle</v-icon>
-                  </v-btn>
-                  <v-avatar size="80" rounded>
-                    <v-img
-                    :src="work"
-                    max-height="100"
-                    max-width="100"
-                    aspect-ratio="1"
-                  ></v-img>
-                  </v-avatar>
-                </v-badge>
-              </v-col>
-        </v-layout>
-        <v-layout class="d-flex flex-row justify-center">
-          <v-btn @click="createProfile" :disabled="profile.greeting === ''" rounded>
-            ポートフォリオを保存
+            </label>
+          </v-col>
+          <v-col cols="4">
+            <v-avatar size="100">
+              <v-img
+                :src="prevAvatar"
+              ></v-img>
+            </v-avatar>
+          </v-col>
+        </v-row>
+
+        <v-row justify="center">
+          <label>自己紹介/挨拶</label>
+        </v-row>
+        <v-row justify="center">
+          <v-col cols="11">
+            <v-textarea
+            label="自己紹介"
+            v-model="profile.greeting"
+            rounded
+            outlined
+            color="remake"
+            clearable
+            hint="簡単なプロフィールなどを入力しましょう。一覧画面などで表示されます"
+            >
+            </v-textarea>
+          </v-col>
+        </v-row>
+        <v-row justify="center" class="mb-10">
+          <v-col cols="11">
+            <v-textarea
+            label="PR/リメイクについて"
+            v-model="profile.description"
+            rounded
+            outlined
+            clearable
+            color="remake"
+            hint="リメイクする際の金額や納品までの期間なども伝えておきましょう"
+            ></v-textarea>
+          </v-col>
+        </v-row>
+        <v-row justify="center">
+          <label>ポートフォリオ画像を追加する</label>
+        </v-row>
+        <v-row justify="center">
+          <label for="input_portfolio" class="portfolio">
+            +
+            <input
+            type="file"
+            label="ポートフォリオ画像"
+            @change="onWorksChange"
+            multiple
+            name="profile[works][]"
+            id="input_portfolio"
+            style="display:none;"
+            >
+          </label>
+        </v-row>
+        <v-row justify="start">
+          <v-col
+            cols="4"
+            v-for="(work, index) in prevWorks"
+            v-bind:key="index"
+          >
+            <v-badge
+              bottom overlap color="rgba(0,0,0,0)"
+            >
+              <v-btn @click="deleteWork(index)" slot="badge" fab height="20" width="20">
+                <v-icon>mdi-close-circle</v-icon>
+              </v-btn>
+              <v-avatar size="100" class="rounded-xl">
+                <v-img
+                :src="work"
+                aspect-ratio="1"
+              ></v-img>
+              </v-avatar>
+            </v-badge>
+          </v-col>
+        </v-row>
+        <v-row justify="center">
+
+        </v-row>
+        <v-row justify="center">
+          <v-btn
+          @click="createProfile"
+          :disabled="profile.greeting === ''"
+          rounded
+          x-large
+          color="accent"
+          class="my-10 white--text"
+          >
+            プロフィールを登録する
           </v-btn>
-        </v-layout>
-      </v-form>
+        </v-row>
+      </v-container>
+    </div>
+    <div>
+      <BackBtn @clickBackBtn="$router.back()" />
     </div>
   </div>
 </template>
@@ -126,10 +199,15 @@
 <script>
 import axios from 'axios'
 import { mapGetters } from 'vuex'
+import BackBtn from '../components/BackBtn.vue'
 export default {
   name: 'Portfolio',
+  components: {
+    BackBtn
+  },
   data: () => ({
     profile: {
+      name: '',
       avatar: '',
       greeting: '',
       description: '',
@@ -227,6 +305,7 @@ export default {
         .get(`http://localhost:3000/v1/profiles/${userId}`)
         .then(response => response.data)
         .catch(err => console.log(err))
+      this.profile.name = prof.name
       this.profile.description = prof.description
       this.profile.greeting = prof.greeting
       this.profile.id = prof.id
@@ -273,5 +352,22 @@ export default {
 </script>
 
 <style>
-
+.select_file {
+  display:block;
+  width:100px;
+  height:100px;
+  text-align: center;
+  line-height: 100px;
+  background:#DCEDC8;
+  border-radius: 50px;
+}
+.portfolio {
+  display:block;
+  width:50px;
+  height:50px;
+  text-align: center;
+  line-height: 50px;
+  background:#DCEDC8;
+  border-radius: 25px;
+}
 </style>

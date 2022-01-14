@@ -1,31 +1,41 @@
 <template>
   <div>
     <div>
-        <h1>SignIn</h1>
-        <p v-if="message !== ''">{{ message }}</p>
-        <v-form>
-          <v-text-field
-            label="e-mail"
-            type="email"
-            v-model="email"
-          ></v-text-field>
-          <v-text-field
-            label="password"
-            type="password"
-            v-model="password"
-          ></v-text-field>
-          <v-btn
-            @click="signIn"
-          >ログイン</v-btn>
-        </v-form>
-        <!-- <label for="email">email</label>
-        <input id="email" type="email" v-model="email" />
-        <label for="password">password</label>
-        <input id="password" type="password" v-model="password" />
-        <button @click="signIn">ログイン</button> -->
-    </div>
-    <div>
-      <!-- <button @click="signOut">ログアウト</button> -->
+      <v-container>
+        <v-row justify="center" class="pa-5">
+          <h2>ログイン画面</h2>
+        </v-row>
+        <v-row>
+          <p v-if="message !== ''">{{ message }}</p>
+        </v-row>
+        <v-row justify="center">
+          <v-col>
+            <v-form>
+              <v-text-field
+                label="e-mail"
+                type="email"
+                outlined
+                fluid
+                rounded
+                color="remake_d"
+                v-model="email"
+              ></v-text-field>
+              <v-text-field
+                label="password"
+                type="password"
+                outlined
+                fluid
+                rounded
+                color="remake_d"
+                v-model="password"
+              ></v-text-field>
+            </v-form>
+          </v-col>
+        </v-row>
+        <v-row justify="center">
+          <v-btn @click="signIn" rounded color="remake_d" class="white--text">ログイン</v-btn>
+        </v-row>
+      </v-container>
     </div>
   </div>
 </template>
@@ -52,7 +62,7 @@ export default {
       () => this.isAuthenticated,
       (newValue, oldValue) => {
         if (newValue === true) {
-          this.$router.push('/about')
+          this.$router.push('/items')
         } else {
           console.log(false)
         }
@@ -67,7 +77,8 @@ export default {
         password: this.password
       }
       await this.authUser(params)
-        .then(this.afterLogIn)
+        .then(this.setLocalStorage)
+        .catch(err => console.log(err))
     },
     afterLogIn () {
       if (this.logedIn) {
@@ -75,25 +86,24 @@ export default {
       } else {
         this.message = 'Emailまたはパスワードが間違っています'
       }
+    },
+    setLocalStorage () {
+      localStorage.setItem('headers', JSON.stringify({
+        accessToken: this.user.accessToken,
+        client: this.user.client,
+        uid: this.user.uid,
+        id: this.user.id,
+        designer: this.user.designer,
+        name: this.user.name,
+        expiry: this.user.expiry
+      }))
     }
-    // setLocalStorage () {
-    //   localStorage.setItem('headers', JSON.stringify({
-    //     accessToken: this.user['acccess-token'],
-    //     client: this.user.client,
-    //     uid: this.user.uid
-    //   }))
-    // }
-    // signOut () {
-    //   const logoutParams = {
-    //     headers: {
-    //       uid: this.$store.state.user.uid,
-    //       'access-token': this.$store.state.user.accessToken,
-    //       client: this.$store.state.user.client
-    //     }
-    //   }
-    //   this.deleteSession(logoutParams)
-    //   console.log(this.isAuthenticated)
-    // }
   }
 }
 </script>
+
+<style>
+h2 {
+  color:#97D61B;
+}
+</style>

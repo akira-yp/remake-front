@@ -9,7 +9,8 @@ const state = {
   uid: null,
   client: null,
   designer: null,
-  expiry: null
+  expiry: null,
+  avatar: null
 }
 
 const getters = {
@@ -24,7 +25,15 @@ const getters = {
 }
 
 const mutations = {
-  setUser (state, user) {
+  setUser: (state, user) => {
+    // console.log(user.data)
+    // state.id = user.data.data.id
+    // state.name = user.data.data.name
+    // state.uid = user.data.data.uid
+    // state.accessToken = user.headers['access-token']
+    // state.client = user.headers.client
+    // state.designer = user.data.data.designer
+    // state.expiry = user.headers.expiry
     [state.name, state.id, state.uid, state.accessToken, state.client, state.designer, state.expiry] = [
       user.data.data.name,
       user.data.data.id,
@@ -39,10 +48,14 @@ const mutations = {
       client: user.headers.client,
       uid: user.data.data.uid,
       id: user.data.data.id,
-      designer: user.data.data.designer
+      designer: user.data.data.designer,
+      expiry: user.header.expiry,
+      name: user.data.data.name
     }))
+    console.log(user)
   },
-  removeUser (state) {
+  removeUser: (state) => {
+    console.log(state)
     state.name = null
     state.id = null
     state.accessToken = null
@@ -52,7 +65,7 @@ const mutations = {
     state.expiry = null
     localStorage.removeItem('headers')
   },
-  setAuthData (state, user) {
+  setAuthData: (state, user) => {
     state.accessToken = user.accessToken
     state.client = user.client
     state.uid = user.uid

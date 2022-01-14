@@ -1,49 +1,77 @@
 <template>
   <div>
-    <v-container v-if="checkUserRoll && assignedItems.length > 0">
-      <v-row>
-        <v-col>
-          <h4 class="accent--text">{{ assignedItems.length }}のリメイク依頼があります</h4>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col
-          v-for="(item, index) in assignedItems"
-          :key="index"
-          cols="6"
-        >
-          <v-card @click="showAssign(item.id)" class="rounded-xl">
-            <v-responsive :aspect-ratio="1/1">
-              <v-img
-               :aspect-ratio="1/1"
-               :src="item.images_url[0]"
-              ></v-img>
-            </v-responsive>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
-    <v-container v-if="assignItems.length > 0">
-      <v-row>
-        <h2>リメイク依頼したアイテム一覧</h2>
-      </v-row>
-      <v-row>
-        <v-col
-          v-for="(item, index) in assignItems"
-          :key="index"
-          cols="6"
-        >
-          <v-card @click="showAssign(item.id)" class="rounded-xl">
-            <v-responsive :aspect-ratio="1/1">
-              <v-img
-               :aspect-ratio="1/1"
-               :src="item.images_url[0]"
-              ></v-img>
-            </v-responsive>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
+    <div>
+      <v-container>
+        <v-row>
+          <v-btn rounded small class="ma-1"
+          @click="toggleSections(1)"
+          :disabled="currentSection.new">新規リメイク依頼</v-btn>
+          <v-btn rounded small class="ma-1"
+          @click="toggleSections(2)"
+          :disabled="currentSection.progress">進行中のリメイク案件</v-btn>
+        </v-row>
+      </v-container>
+    </div>
+    <div v-if="checkUserRoll && assignedItems.length > 0 && currentSection.new">
+      <v-container>
+        <v-row>
+          <v-col>
+            <h4 class="accent--text">{{ newAssignsCount }}件の新規リメイク依頼があります</h4>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col
+            v-for="(item, index) in newAssigned()"
+            :key="index"
+            cols="6"
+          >
+            <v-card @click="showAssign(item.id)" class="rounded-xl">
+              <v-responsive :aspect-ratio="1/1">
+                <v-img
+                :aspect-ratio="1/1"
+                :src="item.images_url[0]"
+                ></v-img>
+              </v-responsive>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+    </div>
+    <div v-if="checkUserRoll && assignedItems.length > 0 && currentSection.progress">
+      <v-container>
+        <v-row>
+          <v-col>
+            <h5>{{ progressAssignsCount }}件の受注中のリメイク案件を表示しています</h5>
+          </v-col>
+        </v-row>
+      </v-container>
+    </div>
+    <div v-if="assignItems.length > 0">
+      <v-container>
+        <v-row>
+          <h2>リメイク依頼したアイテム一覧</h2>
+        </v-row>
+        <v-row>
+          <v-col
+            v-for="(item, index) in assignItems"
+            :key="index"
+            cols="6"
+          >
+            <v-card @click="showAssign(item.id)" class="rounded-xl">
+              <v-responsive :aspect-ratio="1/1">
+                <v-img
+                :aspect-ratio="1/1"
+                :src="item.images_url[0]"
+                ></v-img>
+              </v-responsive>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+    </div>
+    <div>
+      <BackBtn @clickBackBtn="$router.back()" />
+    </div>
   </div>
 </template>
 
@@ -51,13 +79,21 @@
 import axios from 'axios'
 import { mapGetters } from 'vuex'
 import { getAuthDataFromStorage } from '../api/auth.js'
+import BackBtn from '../components/BackBtn.vue'
 
 export default {
   name: 'MyPage',
+  components: {
+    BackBtn
+  },
   data: () => ({
-    assignItems: {},
-    assignedItems: {},
-    postedItems: {}
+    assignItems: [],
+    assignedItems: [],
+    postedItems: [],
+    currentSection: {
+      new: true,
+      progress: false
+    }
   }),
   created () {
     this.fetchAssignItems()
@@ -67,6 +103,12 @@ export default {
     ...mapGetters('user', ['userId', 'isDesigner', 'isAuthenticated']),
     checkUserRoll () {
       return this.isDesigner
+    },
+    newAssignsCount () {
+      return this.assignedItems.filter(item => item.status === 0).length
+    },
+    progressAssignsCount () {
+      return this.assignedItems.filter(item => item.status === 1).length
     }
   },
   methods: {
@@ -96,6 +138,15 @@ export default {
       console.log(assigned)
       this.assignedItems = assigned
     },
+    toggleSections (i) {
+      if (i === 1) {
+        this.currentSection.new = true
+        this.currentSection.progress = false
+      } else {
+        this.currentSection.new = false
+        this.currentSection.progress = true
+      }
+    },
     showAssign (id) {
       this.$router.push({
         path: '/assign',
@@ -103,6 +154,9 @@ export default {
           id: id
         }
       })
+    },
+    newAssigned () {
+      return this.assignedItems.filter(item => item.status === 0)
     }
   }
 }

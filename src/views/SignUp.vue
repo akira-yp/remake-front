@@ -1,31 +1,62 @@
 <template>
   <div>
-    <v-btn @click="toggleDesigner()"></v-btn>
-    <h1>{{ setTitle }}</h1>
-    <v-form>
-      <v-text-field
-        label="name"
-        v-model="name"
-      ></v-text-field>
-      <v-text-field
-        label="e-mail"
-        type="email"
-        v-model="email"
-      ></v-text-field>
-      <v-text-field
-        label="password"
-        type="password"
-        v-model="password"
-      ></v-text-field>
-      <v-btn
-        v-if="designer"
-        @click="signUp"
-      >デザイナー登録する</v-btn>
-      <v-btn
-        v-else
-        @click="signUp"
-      >アカウント登録する</v-btn>
-    </v-form>
+    <!-- <v-btn @click="toggleDesigner()"></v-btn> -->
+    <div>
+      <v-container>
+        <v-row justify="center" class="pa-5">
+          <h2>{{ setTitle }}</h2>
+        </v-row>
+        <v-row justify="center">
+          <v-col>
+            <v-form>
+              <v-text-field
+                label="name"
+                v-model="name"
+                fluid
+                rounded
+                outlined
+                color="remake"
+              ></v-text-field>
+              <v-text-field
+                label="e-mail"
+                type="email"
+                v-model="email"
+                fluid
+                rounded
+                outlined
+                color="remake"
+              ></v-text-field>
+              <v-text-field
+                label="password"
+                type="password"
+                v-model="password"
+                fluid
+                rounded
+                outlined
+                color="remake"
+              ></v-text-field>
+            </v-form>
+          </v-col>
+        </v-row>
+        <v-row justify="center">
+          <v-btn
+            v-if="designer"
+            @click="signUp"
+            rounded
+            color="remake_d"
+            class="white--text"
+          >デザイナー登録する</v-btn>
+          <v-btn
+            v-else
+            @click="signUp"
+            rounded
+            color="remake_d"
+            class="white--text"
+          >アカウント登録する</v-btn>
+        </v-row>
+      </v-container>
+    </div>
+
   </div>
 </template>
 
@@ -37,7 +68,7 @@ export default {
     name: '',
     email: '',
     password: '',
-    designer: Boolean
+    designer: null
   }),
   created () {
     this.$route.query.designer === 'true' ? this.designer = true : this.designer = false
