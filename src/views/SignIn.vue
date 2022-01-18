@@ -52,7 +52,7 @@ export default {
     message: ''
   }),
   computed: {
-    ...mapGetters('user', ['user', 'isAuthenticated']),
+    ...mapGetters('user', ['user', 'userId', 'isAuthenticated']),
     logedIn () {
       return this.isAuthenticated
     }
@@ -62,6 +62,8 @@ export default {
       () => this.isAuthenticated,
       (newValue, oldValue) => {
         if (newValue === true) {
+          this.fetchAvatar(this.userId)
+          this.setLocalStorage()
           this.$router.push('/items')
         } else {
           console.log(false)
@@ -70,22 +72,17 @@ export default {
     )
   },
   methods: {
-    ...mapActions('user', ['authUser']),
+    ...mapActions('user', ['authUser', 'fetchAvatar']),
     async signIn () {
       const params = {
         email: this.email,
         password: this.password
       }
-      await this.authUser(params)
-        .then(this.setLocalStorage)
-        .catch(err => console.log(err))
-    },
-    afterLogIn () {
-      if (this.logedIn) {
-        this.$router.push('/items')
-      } else {
-        this.message = 'Emailまたはパスワードが間違っています'
-      }
+      this.authUser(params)
+      // .then(() => {
+      //   console.log(this.userId)
+      // })
+      // .catch(err => console.log(err))
     },
     setLocalStorage () {
       localStorage.setItem('headers', JSON.stringify({
@@ -98,6 +95,24 @@ export default {
         expiry: this.user.expiry
       }))
     }
+    // afterLogIn () {
+    //   if (this.logedIn) {
+    //     this.$router.push('/items')
+    //   } else {
+    //     this.message = 'Emailまたはパスワードが間違っています'
+    //   }
+    // }
+    // setLocalStorage () {
+    //   localStorage.setItem('headers', JSON.stringify({
+    //     accessToken: this.user.accessToken,
+    //     client: this.user.client,
+    //     uid: this.user.uid,
+    //     id: this.user.id,
+    //     designer: this.user.designer,
+    //     name: this.user.name,
+    //     expiry: this.user.expiry
+    //   }))
+    // }
   }
 }
 </script>

@@ -78,12 +78,12 @@
         <template v-slot:activator="{ on, attrs }">
           <v-avatar
             color="white"
-            size="36"
+            size="48"
             v-bind="attrs"
             v-on="on"
           >
-            <span v-if="logedIn" style="color: #57D26A;">{{ userChars }}</span>
-            <span v-else><v-icon size="36" color="remake">mdi-account</v-icon></span>
+            <v-img v-if="logedIn" :src="getAvatar"></v-img>
+            <span v-else><v-icon size="48" color="remake">mdi-account</v-icon></span>
           </v-avatar>
         </template>
           <v-card
@@ -97,12 +97,14 @@
               tile
               >
                 <v-list-item v-if="logedIn">
+                  <v-list-item-avatar size="48">
+                    <v-img :src="getAvatar"></v-img>
+                  </v-list-item-avatar>
                   <v-list-item-content>
                     <v-list-item-title>{{ user.name }}</v-list-item-title>
                   </v-list-item-content>
-                  <v-divider></v-divider>
                 </v-list-item>
-
+                <v-divider v-if="logedIn"></v-divider>
                 <v-list-item v-if="logedIn">
                     <v-list-item-icon>
                       <v-icon>mdi-account</v-icon>
@@ -174,10 +176,10 @@ export default {
       const localData = JSON.parse(localStorage.getItem('headers'))
       this.setAuthToStore(localData)
     }
-    this.userid = this.user.id
+    this.userid = this.userId
   },
   computed: {
-    ...mapGetters('user', ['user', 'userId', 'isAuthenticated']),
+    ...mapGetters('user', ['user', 'userId', 'getAvatar', 'isAuthenticated']),
     logedIn () {
       return this.isAuthenticated
     },
@@ -235,6 +237,9 @@ export default {
     },
     toSignupPageAsUser () {
       this.$router.push({ path: '/sign_up' })
+    },
+    setAvatar () {
+      return this.getAvatar
     }
   }
 }

@@ -1,6 +1,6 @@
 <template>
   <div >
-    <v-continer>
+    <v-container>
       <section></section>
       <v-row justify="center" height="100" align="end">
         <v-col cols="auto">
@@ -16,7 +16,7 @@
       <v-row justify="center" class="mt-10">
         <img src="@/assets/remake-logo-text.png" alt="">
       </v-row>
-    </v-continer>
+    </v-container>
   </div>
 </template>
 
