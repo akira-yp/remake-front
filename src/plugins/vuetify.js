@@ -7,10 +7,11 @@ export default new Vuetify({
   theme: {
     themes: {
       light: {
-        remake: '#97D61B',
+        remake: '#57D26A',
         remake_l: '#DCEDC8',
         remake_d: '#689F38',
         remake_bg: '#DCEDC8',
+        remake_avatar: '#57D26A',
         text: '#212121',
         text_s: '#757575',
         accent: '#6CDEE3',

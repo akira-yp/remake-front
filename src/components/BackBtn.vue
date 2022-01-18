@@ -3,7 +3,7 @@
     <v-btn
     @click="goBackPage"
     class="backbtn"
-    color="remake_d"
+    color="remake"
     elevation="10"
     fab>
       <v-icon color="white">mdi-arrow-left</v-icon>

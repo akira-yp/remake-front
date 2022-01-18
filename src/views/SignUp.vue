@@ -4,13 +4,18 @@
     <div>
       <v-container>
         <v-row justify="center" class="pa-5">
-          <h2>{{ setTitle }}</h2>
+          <h1>{{ setTitle }}</h1>
         </v-row>
         <v-row justify="center">
-          <v-col>
+          <v-col cols="10">
+            <h3>{{ setMessage }}</h3>
+          </v-col>
+        </v-row>
+        <v-row justify="center">
+          <v-col cols="10">
             <v-form>
               <v-text-field
-                label="name"
+                label="お名前"
                 v-model="name"
                 fluid
                 rounded
@@ -18,7 +23,7 @@
                 color="remake"
               ></v-text-field>
               <v-text-field
-                label="e-mail"
+                label="E-mail"
                 type="email"
                 v-model="email"
                 fluid
@@ -27,7 +32,7 @@
                 color="remake"
               ></v-text-field>
               <v-text-field
-                label="password"
+                label="パスワード"
                 type="password"
                 v-model="password"
                 fluid
@@ -39,24 +44,31 @@
           </v-col>
         </v-row>
         <v-row justify="center">
-          <v-btn
-            v-if="designer"
+          <v-col cols="10">
+            <v-btn
             @click="signUp"
             rounded
-            color="remake_d"
+            block
+            x-large
+            color="remake"
             class="white--text"
-          >デザイナー登録する</v-btn>
+            >
+              <h1 class="white--text">登録する</h1>
+            </v-btn>
+          </v-col>
+        </v-row>
+        <section></section>
+        <v-row justify="center" v-if="!designer">
           <v-btn
-            v-else
-            @click="signUp"
-            rounded
-            color="remake_d"
-            class="white--text"
-          >アカウント登録する</v-btn>
+          color="remake"
+          text
+          @click="toSignUpPageAsDesigner"
+          >
+            <h2 class="as_link">デザイナーとして登録する</h2>
+          </v-btn>
         </v-row>
       </v-container>
     </div>
-
   </div>
 </template>
 
@@ -81,6 +93,13 @@ export default {
       } else {
         return 'アカウント登録'
       }
+    },
+    setMessage () {
+      if (this.designer === true) {
+        return 'リメイクデザイナーとしてご利用するお客様は、こちらからご登録ください。'
+      } else {
+        return '新規ご利用のお客様は、こちらからご登録ください。'
+      }
     }
   },
   methods: {
@@ -100,11 +119,17 @@ export default {
       formData.append('name', this.name)
       formData.append('email', this.email)
       formData.append('password', this)
+    },
+    toSignUpPageAsDesigner () {
+      this.designer = true
     }
   }
 }
 </script>
 
 <style>
-
+.as_link {
+  text-decoration: underline;
+  color: #57d26a;
+}
 </style>

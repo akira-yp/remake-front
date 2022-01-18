@@ -1,14 +1,20 @@
 <template>
   <div >
     <v-continer>
+      <section></section>
+      <v-row justify="center" height="100" align="end">
+        <v-col cols="auto">
+          <h1 class="white--text">ファッションを<br>もっと楽しもう</h1>
+        </v-col>
+      </v-row>
       <v-row justify="center" class="top-wrap" align="end">
         <img
         @click="entranceEvent"
-        src="@/assets/remakelogo.png" class="toplogo"
+        src="@/assets/remake-logo.png" class="toplogo"
         >
       </v-row>
-      <v-row justify="center">
-        <h1>Remake Tree</h1>
+      <v-row justify="center" class="mt-10">
+        <img src="@/assets/remake-logo-text.png" alt="">
       </v-row>
     </v-continer>
   </div>
@@ -31,9 +37,9 @@ export default {
   width:200px;
 }
 .top-wrap {
-  height:300px;
+  height:200px;
 }
-h1 {
-  color:#97D61B;
+h1,h2,h3,h4,h5,h6 {
+  color:#212121;
 }
 </style>

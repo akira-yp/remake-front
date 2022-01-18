@@ -17,6 +17,7 @@ const getters = {
   isDesigner (state) {
     return state.designer === true
   },
+  avatar: state => state.avatar,
   userId: state => state.id,
   user: state => state,
   isAuthenticated (state) {

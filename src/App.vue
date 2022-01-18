@@ -23,7 +23,7 @@
               <router-link to="/items">アイテムを探す</router-link>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item v-if="logedIn">
+          <v-list-item v-if="!logedIn">
             <v-list-item-icon>
               <v-icon>mdi-login</v-icon>
             </v-list-item-icon>
@@ -77,13 +77,13 @@
       <v-menu class="position-absolute end-0">
         <template v-slot:activator="{ on, attrs }">
           <v-avatar
-            color="remake_d"
+            color="white"
             size="36"
             v-bind="attrs"
             v-on="on"
           >
-            <span v-if="logedIn" class="white--text">{{ userChars }}</span>
-            <span v-else><v-icon>mdi-account</v-icon></span>
+            <span v-if="logedIn" style="color: #57D26A;">{{ userChars }}</span>
+            <span v-else><v-icon size="36" color="remake">mdi-account</v-icon></span>
           </v-avatar>
         </template>
           <v-card
@@ -92,51 +92,58 @@
             tile
           >
             <v-list dense>
-          <v-list-item-group
-          class="mx-auto"
-          tile
-          >
-            <v-list-item v-if="logedIn">
-                <v-list-item-icon>
-                  <v-icon>mdi-account</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content @click="toMypage">
-                  <v-list-title>マイページ</v-list-title>
-                </v-list-item-content>
-            </v-list-item>
-            <v-list-item v-if="logedIn" @click="toPortfolio">
-              <v-list-item-icon>
-                <v-icon>mdi-account-edit</v-icon>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-title>ポートフォリオを編集する</v-list-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item @click="signOut" v-if="logedIn">
-              <v-list-item-icon>
-                <v-icon>mdi-logout</v-icon>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-title>ログアウト</v-list-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item @click="toSignIn" v-if="!logedIn">
-              <v-list-item-icon>
-                <v-icon>mdi-login</v-icon>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-title>ログイン</v-list-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item @click="toHome" v-if="!logedIn">
-              <v-list-item-icon>
-                <v-icon>mdi-account-plus</v-icon>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-title>アカウント作成</v-list-title>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list-item-group>
+              <v-list-item-group
+              class="mx-auto"
+              tile
+              >
+                <v-list-item v-if="logedIn">
+                  <v-list-item-content>
+                    <v-list-item-title>{{ user.name }}</v-list-item-title>
+                  </v-list-item-content>
+                  <v-divider></v-divider>
+                </v-list-item>
+
+                <v-list-item v-if="logedIn">
+                    <v-list-item-icon>
+                      <v-icon>mdi-account</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content @click="toMypage">
+                      <v-list-item-title>マイページ</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item v-if="logedIn" @click="toPortfolio">
+                  <v-list-item-icon>
+                    <v-icon>mdi-account-edit</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>ポートフォリオを編集する</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item @click="signOut" v-if="logedIn">
+                  <v-list-item-icon>
+                    <v-icon>mdi-logout</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>ログアウト</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item @click="toSignIn" v-if="!logedIn">
+                  <v-list-item-icon>
+                    <v-icon>mdi-login</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>ログイン</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item @click="toSignupPageAsUser" v-if="!logedIn">
+                  <v-list-item-icon>
+                    <v-icon>mdi-account-plus</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>アカウント作成</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list-item-group>
             </v-list>
           </v-card>
       </v-menu>
@@ -225,6 +232,9 @@ export default {
     },
     toSignIn () {
       this.$router.push({ path: '/sign_in' })
+    },
+    toSignupPageAsUser () {
+      this.$router.push({ path: '/sign_up' })
     }
   }
 }

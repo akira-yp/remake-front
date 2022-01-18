@@ -16,7 +16,7 @@
       <v-container>
         <v-row>
           <v-col>
-            <h4 class="accent--text">{{ newAssignsCount }}件の新規リメイク依頼があります</h4>
+            <h4 class="accent--text">{{ newAssignedCount }}件の新規リメイク依頼があります</h4>
           </v-col>
         </v-row>
         <v-row>
@@ -37,19 +37,20 @@
         </v-row>
       </v-container>
     </div>
-    <div v-if="checkUserRoll && assignedItems.length > 0 && currentSection.progress">
+    <div v-if="checkUserRoll && progressAssignedCount > 0 && currentSection.progress">
       <v-container>
         <v-row>
           <v-col>
-            <h5>{{ progressAssignsCount }}件の受注中のリメイク案件を表示しています</h5>
+            <h5>{{ progressAssignedCount }}件の受注中のリメイク案件を表示しています</h5>
           </v-col>
         </v-row>
+        <v-row></v-row>
       </v-container>
     </div>
     <div v-if="assignItems.length > 0">
       <v-container>
         <v-row>
-          <h2>リメイク依頼したアイテム一覧</h2>
+          <h2>リメイク依頼中のアイテム一覧</h2>
         </v-row>
         <v-row>
           <v-col
@@ -104,10 +105,10 @@ export default {
     checkUserRoll () {
       return this.isDesigner
     },
-    newAssignsCount () {
+    newAssignedCount () {
       return this.assignedItems.filter(item => item.status === 0).length
     },
-    progressAssignsCount () {
+    progressAssignedCount () {
       return this.assignedItems.filter(item => item.status === 1).length
     }
   },
@@ -161,3 +162,9 @@ export default {
   }
 }
 </script>
+
+<style>
+h2,h5 {
+  color:#757575;
+}
+</style>

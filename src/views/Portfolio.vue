@@ -18,6 +18,9 @@
 
     <div v-if="!isEditMode">
       <v-container>
+        <v-row>
+          <v-chip v-if="profile.orderable" class="ma-2" color="orange" text-color="white">リメイク依頼受け付け中です</v-chip>
+        </v-row>
         <v-row justify="start">
           <v-card flat>
             <v-list>
@@ -52,8 +55,7 @@
         <v-row justify="center">
           <v-card width="95%" rounded flat>
             <v-card-title>ポートフォリオ</v-card-title>
-              <v-card-content>
-                <v-container>
+              <v-container>
                 <v-row>
                   <v-col
                   v-for="(work, index) in prevWorks"
@@ -64,28 +66,34 @@
                     :src="work"
                     class="rounded-xl"
                     aspect-ratio="1"
+                    @click="popupFigure(work)"
                     ></v-img>
                   </v-col>
                 </v-row>
               </v-container>
-            </v-card-content>
           </v-card>
         </v-row>
       </v-container>
-      <v-layout v-if="logedIn && !isCurrentUser" justify-center ma-5>
-        <v-btn @click="toAssign" rounded>リメイクを依頼する</v-btn>
+      <v-layout v-if="logedIn && !isCurrentUser && profile.orderable" justify-center ma-5>
+        <v-btn
+        @click="toAssign"
+        rounded
+        x-large
+        class="accent font-weight-bold"
+        >{{ profile.name }}さんにリメイクを依頼する</v-btn>
       </v-layout>
+      <section></section>
     </div>
 
     <div v-if="isEditMode">
       <v-container>
         <v-row justify="center">
-          <label>プロフィール画像を登録</label>
+          <h3>プロフィール画像を登録</h3>
         </v-row>
         <v-row justify="center" class="mb-10">
           <v-col cols="4">
             <label for="change_avatar" class="select_file" >
-              <v-icon>mdi-plus</v-icon>
+              <v-icon color="white">mdi-plus</v-icon>
               <input
               type="file"
               label="プロフィール写真"
@@ -106,7 +114,7 @@
         </v-row>
 
         <v-row justify="center">
-          <label>自己紹介/挨拶</label>
+          <h3>自己紹介/挨拶</h3>
         </v-row>
         <v-row justify="center">
           <v-col cols="11">
@@ -115,7 +123,7 @@
             v-model="profile.greeting"
             rounded
             outlined
-            color="remake"
+            color="remake_d"
             clearable
             hint="簡単なプロフィールなどを入力しましょう。一覧画面などで表示されます"
             >
@@ -130,17 +138,26 @@
             rounded
             outlined
             clearable
-            color="remake"
+            color="remake_d"
             hint="リメイクする際の金額や納品までの期間なども伝えておきましょう"
             ></v-textarea>
           </v-col>
         </v-row>
+
+        <v-row class="mb-10" justify="center">
+          <h3>リメイク依頼を受け付けますか？</h3>
+        </v-row>
+        <v-row justify="center" class="mb-10">
+          <v-btn @click="toggleOrderable" rounded x-large class="ma-1" v-bind:class="{ btnon: !isOrderable, btnoff: isOrderable }">今は受け付けない</v-btn>
+          <v-btn @click="toggleOrderable" rounded x-large class="ma-1" v-bind:class="{ btnon: isOrderable, btnoff: !isOrderable }">受け付ける</v-btn>
+        </v-row>
+
         <v-row justify="center">
-          <label>ポートフォリオ画像を追加する</label>
+          <h3>ポートフォリオ画像を追加する</h3>
         </v-row>
         <v-row justify="center">
           <label for="input_portfolio" class="portfolio">
-            +
+            <v-icon color="white">mdi-plus</v-icon>
             <input
             type="file"
             label="ポートフォリオ画像"
@@ -193,6 +210,18 @@
     <div>
       <BackBtn @clickBackBtn="$router.back()" />
     </div>
+    <section></section>
+    <v-dialog v-model="dialog" fullscreen>
+      <v-card ma-0>
+        <v-img :src="currentImage">
+        </v-img>
+        <v-card-actions>
+          <v-btn @click="dialog = false" fab small>
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -211,6 +240,7 @@ export default {
       avatar: '',
       greeting: '',
       description: '',
+      orderable: false,
       works: [],
       id: null,
       user_id: null
@@ -218,10 +248,13 @@ export default {
     prevAvatar: '',
     prevWorks: [],
     isEditMode: false,
-    editBtn: '編集する'
+    editBtn: '編集する',
+    dialog: false,
+    currentImage: null
   }),
   created () {
     this.fetchProfile(this.$route.query.id)
+    window.scroll({ top: 0 })
   },
   computed: {
     ...mapGetters('user', ['userId', 'isAuthenticated']),
@@ -230,6 +263,9 @@ export default {
     },
     isCurrentUser () {
       return this.$store.state.user.id === Number(this.profile.user_id)
+    },
+    isOrderable () {
+      return this.profile.orderable
     }
   },
   methods: {
@@ -262,6 +298,7 @@ export default {
       formData.append('profile[greeting]', this.profile.greeting)
       formData.append('profile[description]', this.profile.description)
       formData.append('profile[avatar]', this.profile.avatar)
+      formData.append('profile[orderable]', this.profile.orderable)
       if (this.profile.works.length) {
         for (const work of this.profile.works) {
           formData.append('profile[works]' + '[]', work)
@@ -282,6 +319,7 @@ export default {
         .catch(err => console.log(err))
       this.profile.description = res.description
       this.profile.greeting = res.greeting
+      this.profile.orderable = res.orderable
       this.profile.id = res.id
       this.profile.user_id = res.user_id
       this.prevAvatar = res.avatar_url
@@ -308,6 +346,7 @@ export default {
       this.profile.name = prof.name
       this.profile.description = prof.description
       this.profile.greeting = prof.greeting
+      this.profile.orderable = prof.orderable
       this.profile.id = prof.id
       this.profile.user_id = prof.user_id
       this.prevAvatar = prof.avatar_url
@@ -346,6 +385,13 @@ export default {
           designer_id: this.profile.user_id
         }
       })
+    },
+    toggleOrderable () {
+      this.profile.orderable = !this.profile.orderable
+    },
+    popupFigure (image) {
+      this.currentImage = image
+      this.dialog = true
     }
   }
 }
@@ -369,5 +415,21 @@ export default {
   line-height: 50px;
   background:#DCEDC8;
   border-radius: 25px;
+  color:white;
+}
+.btnon {
+  background:#689F38 !important;
+  color: white !important;
+  font-weight: bold;
+}
+.btnoff {
+  background: #DCEDC8 !important;
+  color: white !important;
+}
+h3 {
+  color: #757575;
+}
+section {
+  height:200px;
 }
 </style>
