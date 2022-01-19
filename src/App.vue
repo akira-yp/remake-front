@@ -175,6 +175,7 @@ export default {
     if (this.$store.state.user.client === null) {
       const localData = JSON.parse(localStorage.getItem('headers'))
       this.setAuthToStore(localData)
+      this.fetchAvatar(localData.id)
     }
     this.userid = this.userId
   },
@@ -191,7 +192,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('user', ['deleteSession', 'setAuthToStore']),
+    ...mapActions('user', ['deleteSession', 'setAuthToStore', 'fetchAvatar']),
     signOut () {
       const logoutParams = {
         headers: {

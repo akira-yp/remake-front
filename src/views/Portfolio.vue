@@ -73,15 +73,21 @@
               </v-container>
           </v-card>
         </v-row>
+        <section></section>
+        <v-row v-if="logedIn && !isCurrentUser && profile.orderable" justify="center">
+          <v-col cols="10">
+            <v-btn
+            @click="toAssign"
+            rounded
+            x-large
+            block
+            color="remake"
+            >
+              <h2 class="white--text">リメイクを依頼する</h2>
+            </v-btn>
+          </v-col>
+        </v-row>
       </v-container>
-      <v-layout v-if="logedIn && !isCurrentUser && profile.orderable" justify-center ma-5>
-        <v-btn
-        @click="toAssign"
-        rounded
-        x-large
-        class="accent font-weight-bold"
-        >{{ profile.name }}さんにリメイクを依頼する</v-btn>
-      </v-layout>
       <section></section>
     </div>
 

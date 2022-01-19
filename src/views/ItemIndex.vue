@@ -8,6 +8,7 @@
             rounded
             color="remake_d"
             prepend-inner-icon="mdi-magnify"
+            class="mt-3"
           >
           </v-text-field>
         </v-col>

@@ -1,25 +1,49 @@
 <template>
   <div>
-
     <div v-if="isStatus">
       <v-container>
-        <v-row justify="center" class="pa-2">
-            <v-avatar>
-              <v-img
-              :src="owner_avatar"
-              ></v-img>
-            </v-avatar>
+        <v-row justify="center" class="mt-3">
+          <h2>リメイク依頼</h2>
+        </v-row>
+        <v-row justify="center">
+          <v-col cols="11">
+            <p>ここでは依頼額の変更や、チャット欄にて条件の詳細などを確認しあうことができます。条件に問題がなければデザイナーの方は
+              「依頼を引き受ける」をクリックしてください。</p>
+          </v-col>
+        </v-row>
+        <v-row justify="center" align="center" dense class="pa-2">
+          <v-col cols="auto">
+            <v-card flat class="text-center">
+              <v-avatar>
+                <v-img
+                v-if="owner_avatar !== null"
+                :src="owner_avatar"
+                ></v-img>
+                <span v-else><v-icon size="48" color="remake">mdi-account</v-icon></span>
+              </v-avatar>
+              <v-card-text class="pa-0">{{ owner_name }}</v-card-text>
+            </v-card>
+          </v-col>
+          <v-col cols="auto">
             <v-avatar>
               <v-icon>mdi-arrow-right-bold-circle</v-icon>
             </v-avatar>
             <v-avatar>
               <v-icon>mdi-arrow-right-bold-circle</v-icon>
             </v-avatar>
-            <v-avatar>
-              <v-img
-              :src="designer_avatar"
-              ></v-img>
-            </v-avatar>
+          </v-col>
+          <v-col cols="auto">
+            <v-card flat class="text-center">
+              <v-avatar>
+                <v-img
+                v-if="designer_avatar !==  null"
+                :src="designer_avatar"
+                ></v-img>
+                <span v-else><v-icon size="48" color="remake">mdi-account</v-icon></span>
+              </v-avatar>
+              <v-card-text class="pa-0">{{ designer_name }}</v-card-text>
+            </v-card>
+          </v-col>
         </v-row>
         <v-row justify="center">
           <v-col>
@@ -88,10 +112,17 @@
         </v-row>
         <v-row v-if="isDesigner">
           <v-col>
-            <v-btn @click="acceptAssign" rounded>この内容で依頼を引き受ける</v-btn>
+            <v-btn
+            @click="acceptAssign"
+            rounded
+            x-large
+            color="remake"
+            block
+            ><h3 class="white--text">依頼を引き受ける</h3></v-btn>
           </v-col>
         </v-row>
       </v-container>
+      <section></section>
       <v-container>
         <v-row>
 
@@ -127,16 +158,15 @@
               ></v-img>
             </v-avatar>
           </v-badge>
-
-            <label for="chat_file" class="ma-1 input_chat_file" :elevation="hover ? 24 : 6">
-              <v-icon>mdi-camera</v-icon>
-                <input
-                type="file"
-                id="chat_file"
-                @change="setFig"
-                style="display:none;"
-                >
-            </label>
+          <label for="chat_file" class="ma-1 input_chat_file">
+            <v-icon>mdi-camera</v-icon>
+              <input
+              type="file"
+              id="chat_file"
+              @change="setFig"
+              style="display:none;"
+              >
+          </label>
           <v-btn @click="postChat" fab elevation="2" class="ma-1">
             <v-icon>mdi-plus</v-icon>
           </v-btn>
@@ -280,10 +310,11 @@
           <v-btn
           rounded
           x-large
-          color="accent"
-          text-color="white"
+          color="remake"
           @click="createAssign"
-          >この内容で依頼する</v-btn>
+          >
+            <h2 class="white--text">この内容で依頼する</h2>
+          </v-btn>
         </v-row>
       </v-container>
     </div>
@@ -317,7 +348,9 @@ export default {
       images: []
     },
     owner_avatar: null,
+    owner_name: null,
     designer_avatar: null,
+    designer_name: null,
     prevImages: [],
     selectedImg: 0,
     editMode: true,
@@ -401,12 +434,13 @@ export default {
       }
       await axios.post('http://localhost:3000/v1/assigns', assignData, headers)
         .then(response => {
-          this.$router.push({
-            path: '/assign',
-            query: {
-              id: response.data.id
-            }
-          })
+          this.fetchAssign(response.data.id)
+          // this.$router.push({
+          //   path: '/assign',
+          //   query: {
+          //     id: response.data.id
+          //   }
+          // })
         })
         .catch(err => console.log(err))
       // this.fetchAssign(res.id)
@@ -421,6 +455,8 @@ export default {
       assign.imagesUrl = assign.images_url
       this.owner_avatar = assign.owner_avatar
       this.designer_avatar = assign.designer_avatar
+      this.owner_name = assign.owner_name
+      this.designer_name = assign.designer_name
       delete assign.images_url
       delete assign.owner_avatar
       delete assign.designer_avatar
@@ -440,16 +476,16 @@ export default {
     },
     async updateAssign () {
       const updateData = new FormData()
-      // updateData.append('assign[id]', this.assign.id)
-      updateData.append('assign[description]', this.assign.description)
+      updateData.append('assign[id]', this.assign.id)
+      // updateData.append('assign[description]', this.assign.description)
       updateData.append('assign[budget]', this.assign.budget)
-      updateData.append('assign[status]', this.assign.status)
-      updateData.append('assign[designer_id]', this.assign.designer_id)
-      if (this.assign.images.length) {
-        for (const image of this.assign.images) {
-          updateData.append('assign[images]' + '[]', image)
-        }
-      }
+      // updateData.append('assign[status]', this.assign.status)
+      // updateData.append('assign[designer_id]', this.assign.designer_id)
+      // if (this.assign.images.length) {
+      //   for (const image of this.assign.images) {
+      //     updateData.append('assign[images]' + '[]', image)
+      //   }
+      // }
       const headers = {
         headers:
           {

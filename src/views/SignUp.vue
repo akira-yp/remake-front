@@ -53,7 +53,7 @@
             color="remake"
             class="white--text"
             >
-              <h1 class="white--text">登録する</h1>
+              <h2 class="white--text">登録する</h2>
             </v-btn>
           </v-col>
         </v-row>

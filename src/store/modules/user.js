@@ -67,7 +67,7 @@ const mutations = {
     localStorage.removeItem('avatar')
   },
   setAuthData: (state, user) => {
-    state.accessToken = user['access-token']
+    state.accessToken = user.accessToken
     state.client = user.client
     state.uid = user.uid
     state.id = user.id

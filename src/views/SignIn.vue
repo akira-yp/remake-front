@@ -2,17 +2,17 @@
   <div>
     <div>
       <v-container>
-        <v-row justify="center" class="pa-5">
+        <v-row justify="center" class="pa-10">
           <h2>ログイン画面</h2>
         </v-row>
         <v-row>
           <p v-if="message !== ''">{{ message }}</p>
         </v-row>
         <v-row justify="center">
-          <v-col>
+          <v-col cols="10">
             <v-form>
               <v-text-field
-                label="e-mail"
+                label="E-mail"
                 type="email"
                 outlined
                 fluid
@@ -21,7 +21,7 @@
                 v-model="email"
               ></v-text-field>
               <v-text-field
-                label="password"
+                label="パスワード"
                 type="password"
                 outlined
                 fluid
@@ -33,7 +33,17 @@
           </v-col>
         </v-row>
         <v-row justify="center">
-          <v-btn @click="signIn" rounded color="remake_d" class="white--text">ログイン</v-btn>
+          <v-col cols="10">
+            <v-btn
+            @click="signIn"
+            rounded
+            block
+            x-large
+            color="remake"
+            >
+              <h2 class="white--text">ログイン</h2>
+            </v-btn>
+          </v-col>
         </v-row>
       </v-container>
     </div>
