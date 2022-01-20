@@ -128,7 +128,6 @@ export default {
         .get('http://localhost:3000/v1/assigns', form, headers)
         .then(response => response.data)
         .catch(err => console.log(err))
-      console.log(res)
       this.assignItems = res
     },
     async fetchAssignedItems () {
@@ -136,7 +135,6 @@ export default {
         .get('http://localhost:3000/v1/assigns', { params: { designer_id: this.userId } }, { headers: getAuthDataFromStorage() })
         .then(response => response.data)
         .catch(err => console.log(err))
-      console.log(assigned)
       this.assignedItems = assigned
     },
     toggleSections (i) {

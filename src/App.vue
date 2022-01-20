@@ -82,7 +82,7 @@
             v-bind="attrs"
             v-on="on"
           >
-            <v-img v-if="logedIn" :src="getAvatar"></v-img>
+            <v-img v-if="logedIn && getAvatar !== null" :src="getAvatar"></v-img>
             <span v-else><v-icon size="48" color="remake">mdi-account</v-icon></span>
           </v-avatar>
         </template>

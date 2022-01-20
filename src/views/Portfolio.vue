@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-container>
-      <v-row justify-space-between class="pa-3">
+      <v-row justify-space-between class="py-10">
         <v-flex>
           <h2 v-if="!isEditMode">プロフィール</h2>
           <h2 v-else>プロフィールを作成しよう</h2>
@@ -19,7 +19,11 @@
     <div v-if="!isEditMode">
       <v-container>
         <v-row>
-          <v-chip v-if="profile.orderable" class="ma-2" color="orange" text-color="white">リメイク依頼受け付け中です</v-chip>
+          <v-chip
+          v-if="profile.orderable"
+          class="ma-2" color="orange"
+          text-color="white"
+          >リメイク依頼受け付け中です</v-chip>
         </v-row>
         <v-row justify="start">
           <v-card flat>
@@ -99,7 +103,7 @@
         <v-row justify="center" class="mb-10">
           <v-col cols="4">
             <label for="change_avatar" class="select_file" >
-              <v-icon color="white">mdi-plus</v-icon>
+              <v-icon color="white">mdi-camera</v-icon>
               <input
               type="file"
               label="プロフィール写真"
@@ -158,12 +162,12 @@
           <v-btn @click="toggleOrderable" rounded x-large class="ma-1" v-bind:class="{ btnon: isOrderable, btnoff: !isOrderable }">受け付ける</v-btn>
         </v-row>
 
-        <v-row justify="center">
+        <v-row justify="center" class="mb-10">
           <h3>ポートフォリオ画像を追加する</h3>
         </v-row>
         <v-row justify="center">
           <label for="input_portfolio" class="portfolio">
-            <v-icon color="white">mdi-plus</v-icon>
+            <v-icon color="white">mdi-camera</v-icon>
             <input
             type="file"
             label="ポートフォリオ画像"
@@ -205,10 +209,10 @@
           :disabled="profile.greeting === ''"
           rounded
           x-large
-          color="accent"
+          color="remake"
           class="my-10 white--text"
           >
-            プロフィールを登録する
+            <h3 class="white--text">プロフィールを登録する</h3>
           </v-btn>
         </v-row>
       </v-container>
@@ -233,7 +237,7 @@
 
 <script>
 import axios from 'axios'
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import BackBtn from '../components/BackBtn.vue'
 export default {
   name: 'Portfolio',
@@ -275,6 +279,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions('user', ['fetchAvatar']),
     getBase64 (file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader()
@@ -342,6 +347,7 @@ export default {
             this.profile.works.push(file)
           })
       }
+      this.fetchAvatar(this.userId)
       this.toggleEditMode()
     },
     async fetchProfile (userId) {
@@ -415,12 +421,12 @@ export default {
 }
 .portfolio {
   display:block;
-  width:50px;
-  height:50px;
+  width:100px;
+  height:100px;
   text-align: center;
-  line-height: 50px;
+  line-height: 100px;
   background:#DCEDC8;
-  border-radius: 25px;
+  border-radius: 50px;
   color:white;
 }
 .btnon {

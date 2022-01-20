@@ -1,7 +1,20 @@
 <template>
   <div>
+    <v-container>
+      <v-row>
+        <v-col>
+          <v-text-field
+          rounded
+          outlined
+          v-model="keyword"
+          append-icon="mdi-magnify"
+          >
+          </v-text-field>
+        </v-col>
+      </v-row>
+    </v-container>
     <v-list>
-      <template v-for="(designer, index) in designers">
+      <template v-for="(designer, index) in filteredDesigners">
         <v-list-item
         :key="index"
         @click="toPortfolio(index)"
@@ -33,13 +46,20 @@ import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'DesignersIndex',
   data: () => ({
-    selectedItem: null
+    selectedItem: null,
+    keyword: ''
   }),
   created () {
     this.fetchDesigners()
   },
   computed: {
-    ...mapGetters('designers', ['designers'])
+    ...mapGetters('designers', ['designers']),
+    filteredDesigners () {
+      const word = new RegExp(this.keyword)
+      return this.designers.filter(designer => {
+        return Object.values(designer).join('').match(word)
+      })
+    }
   },
   methods: {
     ...mapActions('designers', ['fetchDesigners']),
